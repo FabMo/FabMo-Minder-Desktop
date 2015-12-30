@@ -1,0 +1,65 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FabMo Devices List</title>
+    <link rel="stylesheet" href="css/foundation.min.css" />
+    <script src="js/detection_service/server.js"></script>
+  </head>
+
+
+  <!-- Body of the page -->
+
+  <body>
+    <nav class="tab-bar">
+      <h1> FabMo Devices List </h1>
+    </nav>
+
+
+    <div class="fabmo_devices_list">
+    </div>
+
+
+    <script src="js/libs/jquery.js"></script>
+    <script src="js/libs/foundation.min.js"></script>
+    <script src="js/libs/FabMo_Detection_service_API.js"></script>  
+    <script>
+    $(document).ready(function(){
+      var gui = require('nw.gui');
+      var win = gui.Window.get();
+      win.on('new-win-policy',function(frame,url,policy){
+        console.log(url);
+        policy.setNewWindowManifest(
+        {"window": {
+        "toolbar": false,
+            "width": 300,
+            "height": 500,
+           }
+        });
+      }); 
+
+
+      setInterval(function(){
+        DetectToolsOnTheNetworks(
+        function(err,data){
+          if(err)console.error(err);
+          if(data.length!==0){ // sometime the service returns an empty array
+            $('.fabmo_devices_list').empty();
+          }
+          data.forEach(function(tool,index,array){
+            ChooseBestWayToConnect(tool,function(ip,port){
+            tool_html='<div class="panel">'+
+                      '<h5>'+tool.hostname+'</h5>'+
+                      '<p>'+ip+'</p>'+
+                      '<a class="button" href="http://'+ip+':'+port+'" target="_blank">Go to that device</a>'+
+                      '</div>';
+            $('.fabmo_devices_list').append(tool_html);
+            });
+          });
+      });
+      },2000);
+    });
+
+    </script>
+  </body>
+</html>
