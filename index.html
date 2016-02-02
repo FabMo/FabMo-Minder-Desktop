@@ -42,6 +42,49 @@
     $(document).ready(function(){
       var gui = require('nw.gui');
       var win = gui.Window.get();
+      var tray;
+			var menu = new gui.Menu();
+			var exit_button = new gui.MenuItem({ type: 'normal', label: 'exit' });
+			menu.append(exit_button);
+  	  // Get the minimize event
+
+
+  	  win.on('close', function() {
+  	  	 // Hide window
+	      this.hide();
+
+	      // Show tray
+	      tray = new gui.Tray({ title: 'FabMo Tool Minder',tooltip:'The FabMo Tool Minder service is still running. click to reopen', icon: 'fabmo.png' });
+				tray.menu = menu;
+	      // Show window and remove tray when clicked
+	      tray.on('click', function() {
+	        win.show();
+	        this.remove();
+	        tray = null;
+	      });
+  	  });
+
+	    win.on('minimize', function() {
+	      // Hide window
+	      this.hide();
+
+	      // Show tray
+	      tray = new gui.Tray({ title: 'FabMo Tool Minder',tooltip:'The FabMo Tool Minder service is still running. click to reopen', icon: 'fabmo.png' });
+				tray.menu = menu;
+	      // Show window and remove tray when clicked
+	      tray.on('click', function() {
+	        win.show();
+	        this.remove();
+	        tray = null;
+	      });
+	    });
+
+			exit_button.on('click',function(){
+				win.close(true);
+			});
+
+
+
       win.on('new-win-policy',function(frame,url,policy){
         console.log(url);
         policy.setNewWindowManifest(
