@@ -91,28 +91,31 @@
       setInterval(function(){
         DetectToolsOnTheNetworks(
         function(err,data){
-          if(err)console.error(err);
-          if(data.length!==0){ // sometime the service returns an empty array
-            $('.fabmo_devices_list').empty();
+          if(err){
+          	console.error(err);
           }
-          data.forEach(function(tool,index,array){
-            ChooseBestWayToConnect(tool,function(ip,port){
-            tool_html='<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">'+
-                      '<h3>'+tool.hostname+'</h3>'+
-                      '<p>'+ip+'</p>'+
-                      '<a class="pure-button" href="http://'+ip+':'+port+'">Go to that device</a>'+
-                      '</div></div>';
-            $('.fabmo_devices_list').append(tool_html);
-            });
-          });
+          else{
+	          if(data.length!==0){ // sometime the service returns an empty array
+	            $('.fabmo_devices_list').empty();
+	          }
+	          data.forEach(function(tool,index,array){
+	            ChooseBestWayToConnect(tool,function(ip,port){
+	            tool_html='<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">'+
+	                      '<h3>'+tool.hostname+'</h3>'+
+	                      '<p>'+ip+'</p>'+
+	                      '<a class="pure-button" href="http://'+ip+':'+port+'">Go to that device</a>'+
+	                      '</div></div>';
+	            $('.fabmo_devices_list').append(tool_html);
+	            });
+	          });
 
-					$('.pure-button').on("click",function(e){
-						e.preventDefault();
-						opener(this.href);	
-						return false;
-					});
-
-      });
+						$('.pure-button').on("click",function(e){
+							e.preventDefault();
+							opener(this.href);	
+							return false;
+						});
+          }
+      	});
       },2000);
     });
 
