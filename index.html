@@ -86,7 +86,26 @@
 
 
 
+			var tools_list=[];
+			function display_tools(tools){
+				$('.fabmo_devices_list').empty();
+        tools.forEach(function(tool,index,array){
+          ChooseBestWayToConnect(tool,function(ip,port){
+          tool_html='<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">'+
+                    '<h3>'+tool.hostname+'</h3>'+
+                    '<p>'+ip+'</p>'+
+                    '<a class="pure-button" href="http://'+ip+':'+port+'">Go to that device</a>'+
+                    '</div></div>';
+          $('.fabmo_devices_list').append(tool_html);
+          });
+        });
 
+				$('.pure-button').on("click",function(e){
+					e.preventDefault();
+					opener(this.href);	
+					return false;
+				});
+			}
 
       setInterval(function(){
         DetectToolsOnTheNetworks(
@@ -95,25 +114,30 @@
           	console.error(err);
           }
           else{
-	          if(data.length!==0){ // sometime the service returns an empty array
-	            $('.fabmo_devices_list').empty();
-	          }
-	          data.forEach(function(tool,index,array){
-	            ChooseBestWayToConnect(tool,function(ip,port){
-	            tool_html='<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">'+
-	                      '<h3>'+tool.hostname+'</h3>'+
-	                      '<p>'+ip+'</p>'+
-	                      '<a class="pure-button" href="http://'+ip+':'+port+'">Go to that device</a>'+
-	                      '</div></div>';
-	            $('.fabmo_devices_list').append(tool_html);
-	            });
-	          });
-
-						$('.pure-button').on("click",function(e){
-							e.preventDefault();
-							opener(this.href);	
-							return false;
-						});
+        		detected_tool_registered_index=[];
+        		for(var detected_tool in data){
+        			tool_already_registered=false;
+        			for(var registered_tool in tools_list){
+        				if(data[detected_tool].hostname===tools_list[registered_tool].hostname){ // if tool is still present.
+          		  		tool_already_registered=true;
+          		  		detected_tool_registered_index.push(registered_tool);
+          		  }
+          		}
+          		if(!tool_already_registered){// new tool
+          		  	detected_tool_registered_index.push(tools_list.push(data[detected_tool])-1); // add the tool to the list and its index to the dedicated array
+          		}
+        		}
+        		for (var registered_tool_index in tools_list){
+        			if(detected_tool_registered_index.indexOf(registered_tool_index)!==-1){ // if the registered tool was detected
+        				tools_list[registered_tool_index].unregister_counter=0; // reset the unregister counter
+        			}else{
+        				tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
+        			}
+        			if(tools_list[registered_tool_index].unregister_counter>4){ // delete the tool from the list after 5 times without detection.
+        				delete tools_list[registered_tool_index];
+        			}
+        		}
+        		display_tools(tools_list);
           }
       	});
       },2000);

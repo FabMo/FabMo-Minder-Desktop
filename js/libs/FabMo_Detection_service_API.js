@@ -9,9 +9,6 @@ function FabMoAutoConnect(callback,linker_port){
 		SelectATool(list_tools,function(err,tool){
 			if (err){ callback(err);return;}
 			ChooseBestWayToConnect(tool,function(ip_address,port){
-				console.log("Best way selected");
-				console.log(ip_address);
-				console.log(port);
 				callback(undefined, 'http://'+ip_address +':'+(port ? port.toString() : '8080'));	
 			});
 		});
@@ -26,13 +23,12 @@ function ChooseBestWayToConnect(tool,callback){
 	// Based on this priority : USB > ethernet > wifi > wifi-direct
 	if (!callback)
 		throw "this function need a callback to work !";
-	console.log("Choosing best way to connect");
-	console.log(tool);
+
 	list_itr = [];
 	for(var idx in tool.network){
 		list_itr.push(tool.network[idx].interface);
 	}
-	console.log(list_itr);
+
 	if(list_itr.indexOf("usb0") > -1)
 	{
 		tool.network.forEach(function(val,key){
