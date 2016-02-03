@@ -17,6 +17,7 @@
         "nodewebkit": "> 0.0.0",
         "node-uuid": ">0.0.0",
         "uniq": "1.0.1", 
+        "opener":"1.4.1",
         "restify": "> 0.0.0"
     }, 
     "scripts": {
