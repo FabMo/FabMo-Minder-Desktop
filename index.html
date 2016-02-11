@@ -4,32 +4,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FabMo Devices List</title>
     <link rel="stylesheet" href="css/pure.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
     <script src="js/detection_service/server.js"></script>
-    <style>
-    	.panel{
-    		background-color: #f3f3f3;
-    	}
-    	h1{
-    		margin-left: 1em;
-    	}
-    	h3{
-    		margin-left: 2em;
-    	}
-    	p{
-    		margin-left: 2em;
-    	}
-    	.pure-button{
-    		display: block;
-    	}
-    </style>
   </head>
 
 
   <!-- Body of the page -->
 
   <body>
-    <nav class="tab-bar">
-      <h1> FabMo Devices List </h1>
+    <nav>
+      <h1> FabMo Devices</h1>
     </nav>
 
     <div class="fabmo_devices_list">
@@ -37,110 +21,151 @@
 
 
     <script src="js/libs/jquery.js"></script>
-    <script src="js/libs/FabMo_Detection_service_API.js"></script>  
+    <script src="js/libs/FabMo_Detection_service_API.js"></script>
+    <script src="js/libs/fabmo.js"></script>  
+
+       
+
     <script>
-    var opener=require('opener');
-    $(document).ready(function(){
-      var gui = require('nw.gui');
-      var win = gui.Window.get();
-      var tray;
-			var menu = new gui.Menu();
-			var exit_button = new gui.MenuItem({ type: 'normal', label: 'exit' });
-			menu.append(exit_button);
-  	  // Get the minimize event
+var opener = require('opener');
+    $(document).ready(function() {
+    	var gui = require('nw.gui');
+    	var win = gui.Window.get();
+    	var tray;
+    	var menu = new gui.Menu();
+    	var exit_button = new gui.MenuItem({
+    		type: 'normal',
+    		label: 'exit'
+    	});
+    	menu.append(exit_button);
+    	// Get the minimize event
+
+    	win.on('close', function() {
+    		// Hide window
+    		this.hide();
+
+    		// Show tray
+    		tray = new gui.Tray({
+    			title: 'FabMo Tool Minder',
+    			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+    			icon: 'fabmo.png'
+    		});
+    		tray.menu = menu;
+    		// Show window and remove tray when clicked
+    		tray.on('click', function() {
+    			win.show();
+    			this.remove();
+    			tray = null;
+    		});
+    	});
+
+    	win.on('minimize', function() {
+    		// Hide window
+    		this.hide();
+
+    		// Show tray
+    		tray = new gui.Tray({
+    			title: 'FabMo Tool Minder',
+    			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+    			icon: 'fabmo.png'
+    		});
+    		tray.menu = menu;
+    		// Show window and remove tray when clicked
+    		tray.on('click', function() {
+    			win.show();
+    			this.remove();
+    			tray = null;
+    		});
+    	});
+
+    	exit_button.on('click', function() {
+    		win.close(true);
+    	});
+
+    	var tools_list = [];
+
+    	function display_tools(tools) {
+    		$('.fabmo_devices_list').empty();
+
+    		tools.forEach(function(tool, index, array) {
+    			toolInfo = {};
 
 
-  	  win.on('close', function() {
-  	  	 // Hide window
-	      this.hide();
+    			ChooseBestWayToConnect(tool, function(ip, port) {
+    				toolInfo['ip'] = ip;
+    				toolInfo['port'] = port;
 
-	      // Show tray
-	      tray = new gui.Tray({ title: 'FabMo Tool Minder',tooltip:'The FabMo Tool Minder service is still running. click to reopen', icon: 'fabmo.png' });
-				tray.menu = menu;
-	      // Show window and remove tray when clicked
-	      tray.on('click', function() {
-	        win.show();
-	        this.remove();
-	        tray = null;
-	      });
-  	  });
-
-	    win.on('minimize', function() {
-	      // Hide window
-	      this.hide();
-
-	      // Show tray
-	      tray = new gui.Tray({ title: 'FabMo Tool Minder',tooltip:'The FabMo Tool Minder service is still running. click to reopen', icon: 'fabmo.png' });
-				tray.menu = menu;
-	      // Show window and remove tray when clicked
-	      tray.on('click', function() {
-	        win.show();
-	        this.remove();
-	        tray = null;
-	      });
-	    });
-
-			exit_button.on('click',function(){
-				win.close(true);
-			});
+    			});
+    			var ip = toolInfo.ip;
+    			var port = toolInfo.port;
 
 
 
-			var tools_list=[];
-			function display_tools(tools){
-				$('.fabmo_devices_list').empty();
-        tools.forEach(function(tool,index,array){
-          ChooseBestWayToConnect(tool,function(ip,port){
-          tool_html='<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">'+
-                    '<h3>'+tool.hostname+'</h3>'+
-                    '<p>'+ip+'</p>'+
-                    '<a class="pure-button" href="http://'+ip+':'+port+'">Go to that device</a>'+
-                    '</div></div>';
-          $('.fabmo_devices_list').append(tool_html);
-          });
-        });
+    			tool_html = '<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
+    				'<div class="wifi"><img src="images/wifi110.png"></div>' +
+    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor"></div><p class="statusTitle"></p>' +
+    				'<p class="ipAddress">' + ip + '</p>' +
+    				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+    				'</div></div>';
+    			$('.fabmo_devices_list').append(tool_html);
 
-				$('.pure-button').on("click",function(e){
-					e.preventDefault();
-					opener(this.href);	
-					return false;
-				});
-			}
 
-      setInterval(function(){
-        DetectToolsOnTheNetworks(
-        function(err,data){
-          if(err){
-          	console.error(err);
-          }
-          else{
-        		detected_tool_registered_index=[];
-        		for(var detected_tool in data){
-        			tool_already_registered=false;
-        			for(var registered_tool in tools_list){
-        				if(data[detected_tool].hostname===tools_list[registered_tool].hostname){ // if tool is still present.
-          		  		tool_already_registered=true;
-          		  		detected_tool_registered_index.push(registered_tool);
-          		  }
-          		}
-          		if(!tool_already_registered){// new tool
-          		  	detected_tool_registered_index.push(tools_list.push(data[detected_tool])-1); // add the tool to the list and its index to the dedicated array
-          		}
-        		}
-        		for (var registered_tool_index in tools_list){
-        			if(detected_tool_registered_index.indexOf(registered_tool_index)!==-1){ // if the registered tool was detected
-        				tools_list[registered_tool_index].unregister_counter=0; // reset the unregister counter
-        			}else{
-        				tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
-        			}
-        			if(tools_list[registered_tool_index].unregister_counter>4){ // delete the tool from the list after 5 times without detection.
-        				delete tools_list[registered_tool_index];
-        			}
-        		}
-        		display_tools(tools_list);
-          }
-      	});
-      },2000);
+    			$.ajax({
+    				url: 'http://' + ip + ':' + port + '/status',
+    				type: "GET"
+    			}).done(function(data) {
+    				var state = data.data.status.state;
+    				$('.statusColor').addClass(state);
+    				$('.statusTitle').text(state);
+    			}).fail(function() {
+    				err = "Link API not responding !";
+    				console.log(err);
+    			});
+
+    		});
+
+    		$('.pure-button').on("click", function(e) {
+    			e.preventDefault();
+    			opener(this.href);
+    			return false;
+    		});
+    	}
+
+
+    	setInterval(function() {
+    		DetectToolsOnTheNetworks(
+    			function(err, data) {
+    				if (err) {
+    					console.error(err);
+    				} else {
+    					detected_tool_registered_index = [];
+    					for (var detected_tool in data) {
+    						tool_already_registered = false;
+    						for (var registered_tool in tools_list) {
+    							if (data[detected_tool].hostname === tools_list[registered_tool].hostname) { // if tool is still present.
+    								tool_already_registered = true;
+    								detected_tool_registered_index.push(registered_tool);
+    							}
+    						}
+    						if (!tool_already_registered) { // new tool
+    							detected_tool_registered_index.push(tools_list.push(data[detected_tool]) - 1); // add the tool to the list and its index to the dedicated array
+    						}
+    					}
+    					for (var registered_tool_index in tools_list) {
+    						if (detected_tool_registered_index.indexOf(registered_tool_index) !== -1) { // if the registered tool was detected
+    							tools_list[registered_tool_index].unregister_counter = 0; // reset the unregister counter
+    						} else {
+    							tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
+    						}
+    						if (tools_list[registered_tool_index].unregister_counter > 4) { // delete the tool from the list after 5 times without detection.
+    							delete tools_list[registered_tool_index];
+    						}
+    					}
+    					display_tools(tools_list);
+    				}
+    			});
+    	}, 2000);
+
     });
 
     </script>
