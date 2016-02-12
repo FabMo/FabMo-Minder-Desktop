@@ -103,10 +103,12 @@ var opener = require('opener');
 
     			tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
     				'<div class="wifi"><img src="images/wifi110.png"></div>' +
-    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+tool.old_state+'"></div><p class="statusTitle">'+tool.old_state+'</p>' +
+    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
+    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
     				'<p class="ipAddress">' + ip + '</p>' +
     				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
     				'</div></div>';
+    				console.log(tool_html);
     			$('.fabmo_devices_list').append(tool_html);
 
 
@@ -115,9 +117,20 @@ var opener = require('opener');
     				type: "GET"
     			}).done(function(data) {
     				var state = data.data.status.state;
-    				$('.'+tool.hostname+' .statusColor').addClass(state);
+    				var job = (data.data.status.job)?data.data.status.job.name:undefined;
+    				$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
     				$('.'+tool.hostname+' .statusTitle').text(state);
+
+    				if(job){
+	    				$('.'+tool.hostname+' .job_label').text('Job : '); 
+	    				$('.'+tool.hostname+' .job_title').text(job);  
+    				}else{
+	    				$('.'+tool.hostname+' .job_label').text(''); 
+	    				$('.'+tool.hostname+' .job_title').text('');  
+    				}
+  				
     				tool.old_state=state;
+    				tool.old_job=job;
     			}).fail(function() {
     				err = "Link API not responding !";
     				console.log(err);

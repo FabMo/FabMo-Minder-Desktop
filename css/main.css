@@ -55,6 +55,9 @@ p {
     margin-left: 3em;
 }
 
+.job {
+    margin-left: 3em;
+}
 .statusColor{
     height: 15px;
     width: 15px;
@@ -106,7 +109,7 @@ p {
 
 
 .running{
-    background-color: #22B34C
+    background-color: #22B34C;
 }
 
 .paused{
@@ -119,4 +122,8 @@ p {
 
 .idle{
     background-color: #777575; 
+}
+
+.manual{
+    background-color: #5C79FF;
 }
