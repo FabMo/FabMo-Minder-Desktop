@@ -92,8 +92,8 @@ var opener = require('opener');
 
 
     			ChooseBestWayToConnect(tool, function(ip, port) {
-    				toolInfo['ip'] = ip;
-    				toolInfo['port'] = port;
+    				toolInfo.ip = ip;
+    				toolInfo.port = port;
 
     			});
     			var ip = toolInfo.ip;
@@ -101,9 +101,9 @@ var opener = require('opener');
 
 
 
-    			tool_html = '<div class="pure-g"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
+    			tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
     				'<div class="wifi"><img src="images/wifi110.png"></div>' +
-    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor"></div><p class="statusTitle"></p>' +
+    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+tool.old_state+'"></div><p class="statusTitle">'+tool.old_state+'</p>' +
     				'<p class="ipAddress">' + ip + '</p>' +
     				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
     				'</div></div>';
@@ -115,8 +115,9 @@ var opener = require('opener');
     				type: "GET"
     			}).done(function(data) {
     				var state = data.data.status.state;
-    				$('.statusColor').addClass(state);
-    				$('.statusTitle').text(state);
+    				$('.'+tool.hostname+' .statusColor').addClass(state);
+    				$('.'+tool.hostname+' .statusTitle').text(state);
+    				tool.old_state=state;
     			}).fail(function() {
     				err = "Link API not responding !";
     				console.log(err);
