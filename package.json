@@ -4,8 +4,10 @@
         "title": "FabMo-Tool-Minder-Desktop", 
         "toolbar": true, 
         "icon": "./fabmo.png",
+        "min_height": 500,
+        "min_width": 450,
         "height": 500, 
-        "width": 300
+        "width": 450
     }, 
     "version": "1.0.0", 
     "readme": "README.md", 

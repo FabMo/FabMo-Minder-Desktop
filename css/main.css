@@ -1,0 +1,129 @@
+@font-face {
+    font-family: Fabfont;
+    src: url(OpenSans-Light.ttf);
+}
+
+body {
+    background-color: #FFFFFF;
+
+}
+
+h1 {
+    margin-top:0px;
+    padding-top: 5px;
+    font-family: Fabfont;
+    font-weight: 100; 
+    color: #ffffff;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 1.8em;
+}
+nav{
+    background-color: #1075F4;
+    height: 50px;
+    box-shadow: 0px 3px 5px 0px rgba(188,188,188,1);
+}
+
+h3 {
+    font-family: Fabfont;
+    }
+    
+p {
+    font-family: Fabfont;
+}
+
+.pure-button {
+    display: block;
+}
+
+.panel{
+    position: relative;
+    background-color: #F6F6F6;
+    margin: .7em;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 0px rgba(188,188,188,1);
+}
+
+.toolName {
+    margin-left: 2em;
+    display: inline-block;
+}
+
+.ipAddress {
+    margin-left: 3em;
+}
+
+.job {
+    margin-left: 3em;
+}
+.statusColor{
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 1em;
+}
+
+.statusTitle{
+    display: inline-block;
+    margin-left: .5em;
+}
+
+.goHere {
+    position: absolute;
+    top: 25;
+    right: 25;
+    float: right;
+    padding-top: 11px;
+    height: 49px;
+    width: 60px;
+    background-color: #00E54E;
+    border-radius: 50%;
+    text-align: center;
+    color: #ffffff;
+    text-decoration: none;
+    font-family: Fabfont;
+}
+
+.goHere img {
+    height: 40px;
+}
+
+
+.wifi {
+    position: absolute;
+    background-color: #1075F4;
+    width: 20px;
+    height: 20px;
+    top: 5;
+    left: 5;
+    border-radius: 50%;
+}
+
+.wifi img{
+    padding-left: 2px;
+    padding-top: 2.5px;
+}
+
+
+.running{
+    background-color: #22B34C;
+}
+
+.paused{
+    background-color: #FEF102;
+}
+
+.stopped {
+    background-color: #ED1B24;
+}
+
+.idle{
+    background-color: #777575; 
+}
+
+.manual{
+    background-color: #5C79FF;
+}
