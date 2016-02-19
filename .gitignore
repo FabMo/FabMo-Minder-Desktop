@@ -77,3 +77,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# NW.js specific
+# =========================
+build/nw_bin
+build/Win
