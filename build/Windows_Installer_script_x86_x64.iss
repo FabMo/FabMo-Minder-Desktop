@@ -19,10 +19,11 @@ DefaultGroupName={#MyAppName}
 Compression=lzma2
 SolidCompression=yes
 OutputDir=./Win
-OutputBaseFilename=fabmotoolminder-win_x64_x86-setup-{#MyAppVersion}
+OutputBaseFilename=fabmotoolminder-win_x64_x86-setup-v{#MyAppVersion}
 ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [Files]
