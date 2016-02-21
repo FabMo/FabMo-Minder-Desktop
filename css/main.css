@@ -4,7 +4,8 @@
 }
 
 body {
-    background-color: #FFFFFF;
+    background-color: #EEEEEE;
+    color : #444444;
 
 }
 
@@ -13,7 +14,7 @@ h1 {
     padding-top: 5px;
     font-family: Fabfont;
     font-weight: 100; 
-    color: #ffffff;
+    color: #EEEEEE;
     width: 90%;
     margin-left: auto;
     margin-right: auto;
@@ -21,7 +22,7 @@ h1 {
     font-size: 1.8em;
 }
 nav{
-    background-color: #1075F4;
+    background-color: #2E3865;
     height: 50px;
     box-shadow: 0px 3px 5px 0px rgba(188,188,188,1);
 }
@@ -58,6 +59,11 @@ p {
 .job {
     margin-left: 3em;
 }
+
+.apologies{
+    text-align: center;
+}
+
 .statusColor{
     height: 15px;
     width: 15px;
@@ -79,7 +85,7 @@ p {
     padding-top: 11px;
     height: 49px;
     width: 60px;
-    background-color: #00E54E;
+    background-color: #5DAA35;
     border-radius: 50%;
     text-align: center;
     color: #ffffff;
@@ -94,7 +100,7 @@ p {
 
 .wifi {
     position: absolute;
-    background-color: #1075F4;
+    background-color: #2E3865;
     width: 20px;
     height: 20px;
     top: 5;
@@ -109,15 +115,15 @@ p {
 
 
 .running{
-    background-color: #22B34C;
+    background-color: #5DAA35;
 }
 
 .paused{
-    background-color: #FEF102;
+    background-color: #D48B3A;
 }
 
 .stopped {
-    background-color: #ED1B24;
+    background-color: #91331E;
 }
 
 .idle{
@@ -125,5 +131,5 @@ p {
 }
 
 .manual{
-    background-color: #5C79FF;
+    background-color: #2E3865;
 }

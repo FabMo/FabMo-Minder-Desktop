@@ -5,6 +5,7 @@
     <title>FabMo Devices List</title>
     <link rel="stylesheet" href="css/pure.min.css" />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/spinner.css" />
     <script src="js/detection_service/server.js"></script>
   </head>
 
@@ -17,6 +18,10 @@
     </nav>
 
     <div class="fabmo_devices_list">
+			<div class="spinner">
+			  <div class="double-bounce1"></div>
+			  <div class="double-bounce2"></div>
+			</div>
     </div>
 
 
@@ -86,63 +91,70 @@ var opener = require('opener');
 
     	function display_tools(tools) {
     		$('.fabmo_devices_list').empty();
+    		if(Object.keys(tools).length<=0) // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
+    		{
+    			spinner_html='<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>'+
+    			"<div class='apologies'><p>Sorry. Despite my best efforts, I wasn't able to locate any tools...</p><p>I will persist though !</p></div> ";
+    			$('.fabmo_devices_list').append(spinner_html);
 
-    		tools.forEach(function(tool, index, array) {
-    			toolInfo = {};
-
-
-    			ChooseBestWayToConnect(tool, function(ip, port) {
-    				toolInfo.ip = ip;
-    				toolInfo.port = port;
-
-    			});
-    			var ip = toolInfo.ip;
-    			var port = toolInfo.port;
+    		}
+    		else{
+	    		tools.forEach(function(tool, index, array) {
+	    			toolInfo = {};
 
 
+	    			ChooseBestWayToConnect(tool, function(ip, port) {
+	    				toolInfo.ip = ip;
+	    				toolInfo.port = port;
 
-    			tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
-    				'<div class="wifi"><img src="images/wifi110.png"></div>' +
-    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
-    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
-    				'<p class="ipAddress">' + ip + '</p>' +
-    				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
-    				'</div></div>';
-    				console.log(tool_html);
-    			$('.fabmo_devices_list').append(tool_html);
+	    			});
+	    			var ip = toolInfo.ip;
+	    			var port = toolInfo.port;
 
 
-    			$.ajax({
-    				url: 'http://' + ip + ':' + port + '/status',
-    				type: "GET"
-    			}).done(function(data) {
-    				var state = data.data.status.state;
-    				var job = (data.data.status.job)?data.data.status.job.name:undefined;
-    				$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
-    				$('.'+tool.hostname+' .statusTitle').text(state);
 
-    				if(job){
-	    				$('.'+tool.hostname+' .job_label').text('Job : '); 
-	    				$('.'+tool.hostname+' .job_title').text(job);  
-    				}else{
-	    				$('.'+tool.hostname+' .job_label').text(''); 
-	    				$('.'+tool.hostname+' .job_title').text('');  
-    				}
-  				
-    				tool.old_state=state;
-    				tool.old_job=job;
-    			}).fail(function() {
-    				err = "Link API not responding !";
-    				console.log(err);
-    			});
+	    			tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
+	    				'<div class="wifi"><img src="images/wifi110.png"></div>' +
+	    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
+	    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
+	    				'<p class="ipAddress">' + ip + '</p>' +
+	    				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+	    				'</div></div>';
+	    			$('.fabmo_devices_list').append(tool_html);
 
-    		});
 
-    		$('.goHere').on("click", function(e) {
-    			e.preventDefault();
-    			opener(this.href);
-    			return false;
-    		});
+	    			$.ajax({
+	    				url: 'http://' + ip + ':' + port + '/status',
+	    				type: "GET"
+	    			}).done(function(data) {
+	    				var state = data.data.status.state;
+	    				var job = (data.data.status.job)?data.data.status.job.name:undefined;
+	    				$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
+	    				$('.'+tool.hostname+' .statusTitle').text(state);
+
+	    				if(job){
+		    				$('.'+tool.hostname+' .job_label').text('Job : '); 
+		    				$('.'+tool.hostname+' .job_title').text(job);  
+	    				}else{
+		    				$('.'+tool.hostname+' .job_label').text(''); 
+		    				$('.'+tool.hostname+' .job_title').text('');  
+	    				}
+	  				
+	    				tool.old_state=state;
+	    				tool.old_job=job;
+	    			}).fail(function() {
+	    				err = "Link API not responding !";
+	    				console.log(err);
+	    			});
+
+	    		});
+
+	    		$('.goHere').on("click", function(e) {
+	    			e.preventDefault();
+	    			opener(this.href);
+	    			return false;
+	    		});
+	    	}
     	}
 
 
