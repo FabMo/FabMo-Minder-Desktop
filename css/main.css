@@ -6,6 +6,7 @@
 body {
     background-color: #EEEEEE;
     color : #444444;
+    -webkit-user-select: none;
 
 }
 
@@ -38,6 +39,7 @@ nav{
 .settings_modal{
     background:#EEEEEE;
     padding:40px;
+    margin:20px;
     
 }
 

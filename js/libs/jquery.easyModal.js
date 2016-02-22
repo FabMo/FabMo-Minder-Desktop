@@ -46,7 +46,7 @@
         init: function (options) {
 
             var defaults = {
-                top: 'auto',
+                top: '10%',
                 left: 'auto',
                 autoOpen: false,
                 overlayOpacity: 0.5,
@@ -103,8 +103,8 @@
                     // When updateZIndexOnOpen is set to true, we avoid computing the z-index on initialization,
                     // because the value would be replaced when opening the modal.
                     'z-index': (o.updateZIndexOnOpen ? 0 : o.zIndex() + 1),
-                    'left' : parseInt(o.left, 10) > -1 ? o.left + 'px' : 50 + '%',
-                    'top' : parseInt(o.top, 10) > -1 ? o.top + 'px' : 50 + '%'
+                    'left' : o.left||"auto",
+                    'top' : o.top||'20%'
                 });
 
                 $modal.bind('openModal', function () {
@@ -116,11 +116,8 @@
                     }
                     $modal.css({
                         'display' : 'block',
-                        'margin-left' : (parseInt(o.left, 10) > -1 ? 0 : -($modal.outerWidth() / 2)) + 'px',
-                        'margin-top' : (parseInt(o.top, 10) > -1 ? 0 : -($modal.outerHeight() / 2)) + 'px',
                         'z-index': modalZ
                     });
-
                     $overlay.css({'z-index': overlayZ, 'display': 'block'});
 
                     if (o.onOpen && typeof o.onOpen === 'function') {
@@ -162,12 +159,12 @@
                 });
 
                 $(window).smartModalResize(function(){
-                    if (o.hasVariableWidth) {
-                        $modal.css({
-                            'margin-left' : (parseInt(o.left, 10) > -1 ? 0 : -($modal.outerWidth() / 2)) + 'px',
-                            'margin-top' : (parseInt(o.top, 10) > -1 ? 0 : -($modal.outerHeight() / 2)) + 'px'
-                        });
-                    }
+                    // if (o.hasVariableWidth) {
+                    //     $modal.css({
+                    //         'margin-left' : (parseInt(o.left, 10) > -1 ? 0 : -($modal.outerWidth() / 2)) + 'px',
+                    //         'margin-top' : (parseInt(o.top, 10) > -1 ? 0 : -($modal.outerHeight() / 2)) + 'px'
+                    //     });
+                    // }
                 });
 
                 // Close when button pressed
