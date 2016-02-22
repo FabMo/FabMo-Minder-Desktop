@@ -15,6 +15,7 @@
   <body>
     <nav>
       <h1> FabMo Devices</h1>
+      <a class="settings_button pure-button easy-modal-open" href="#settings_modal"><img src="./images/settings.png"></a>
     </nav>
 
     <div class="fabmo_devices_list">
@@ -24,15 +25,41 @@
 			</div>
     </div>
 
+    <div class="easy-modal settings_modal" id="settings_modal">
+        <div class="easy-modal-inner">
+         <a class="close settings_modal_close pure-button">x</a>
+         <div class="settings_modal_header">
+             <h2>Settings</h2>
+             <hr>
+         </div>
+         <div class="tray_settings">
+        <form class="pure-form pure-form-stacked">
+            <fieldset>
+                <legend>Tray icon</legend>
+                    <label for="min_tray_action" class="pure-checkbox">
+                        <input class="settings_input" id="min_tray_action" type="checkbox" value="">
+                        Continue to run the Tool Minder in the tray when minimize button is pressed.
+                    </label>
+                    <label for="close_tray_action" class="pure-checkbox">
+                        <input class="settings_input" id="close_tray_action" type="checkbox" value="">
+                        Continue to run the Tool Minder in the tray when exit button is pressed.
+                    </label>
+            </fieldset>
+            <a class="pure-button settings_save_button pure-button-disabled">Save</a>
+        </form>
+        </div>
+    </div>
 
     <script src="js/libs/jquery.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.easyModal.js"></script>
     <script src="js/libs/FabMo_Detection_service_API.js"></script>
     <script src="js/libs/fabmo.js"></script>  
 
        
 
     <script>
-var opener = require('opener');
+    opener = require('opener');
+    nconf = require('nconf');
     $(document).ready(function() {
     	var gui = require('nw.gui');
     	var win = gui.Window.get();
@@ -43,49 +70,107 @@ var opener = require('opener');
     		label: 'exit'
     	});
     	menu.append(exit_button);
+
     	// Get the minimize event
 
     	win.on('close', function() {
-    		// Hide window
-    		this.hide();
+    		if(nconf.get('tray:reduce_on_close')){
+                // Hide window
+        		this.hide();
 
-    		// Show tray
-    		tray = new gui.Tray({
-    			title: 'FabMo Tool Minder',
-    			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
-    			icon: 'fabmo.png'
-    		});
-    		tray.menu = menu;
-    		// Show window and remove tray when clicked
-    		tray.on('click', function() {
-    			win.show();
-    			this.remove();
-    			tray = null;
-    		});
+        		// Show tray
+        		tray = new gui.Tray({
+        			title: 'FabMo Tool Minder',
+        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			icon: './images/fabmo.png'
+        		});
+        		tray.menu = menu;
+        		// Show window and remove tray when clicked
+        		tray.on('click', function() {
+        			win.show();
+        			this.remove();
+        			tray = null;
+        		});
+            }else{
+                win.close(true);
+            }
     	});
 
     	win.on('minimize', function() {
-    		// Hide window
-    		this.hide();
+    		if(nconf.get('tray:reduce_on_minimize')){
+                // Hide window
+        		this.hide();
 
-    		// Show tray
-    		tray = new gui.Tray({
-    			title: 'FabMo Tool Minder',
-    			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
-    			icon: 'fabmo.png'
-    		});
-    		tray.menu = menu;
-    		// Show window and remove tray when clicked
-    		tray.on('click', function() {
-    			win.show();
-    			this.remove();
-    			tray = null;
-    		});
+        		// Show tray
+        		tray = new gui.Tray({
+        			title: 'FabMo Tool Minder',
+        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			icon: './images/fabmo.png'
+        		});
+        		tray.menu = menu;
+        		// Show window and remove tray when clicked
+        		tray.on('click', function() {
+        			win.show();
+        			this.remove();
+        			tray = null;
+        		});
+            }else{
+               
+            }
     	});
 
     	exit_button.on('click', function() {
     		win.close(true);
     	});
+
+
+
+        $('.settings_modal').easyModal();
+        $('.easy-modal-open').click(function(e) {
+            var target = $(this).attr('href');
+            $(target).trigger('openModal');
+            e.preventDefault();
+        });
+
+        $('.easy-modal-close').click(function(e) {
+            $('.easy-modal').trigger('closeModal');
+        });
+
+        $(".easy-modal").on('openModal',function(e){
+            $(".settings_save_button").removeClass("error_button done_button").addClass("pure-button-disabled");
+            $(".settings_save_button").text("Save");
+            //load settings config
+            nconf.use('file', { file: './settings.json' });
+
+            $("#min_tray_action").prop("checked",nconf.get('tray:reduce_on_minimize'));
+            $("#close_tray_action").prop("checked",nconf.get('tray:reduce_on_close'));
+        });
+
+
+        $(".settings_save_button").click(function(e){
+            nconf.set('tray:reduce_on_minimize', $("#min_tray_action").prop("checked"));
+            nconf.set('tray:reduce_on_close', $("#close_tray_action").prop("checked"));
+
+            $(".settings_save_button").addClass("pure-button-disabled");
+            // Save the configuration object to disk
+            nconf.save(function (err) {
+                if(err){
+                    $(".settings_save_button").addClass("error_button");
+                    $(".settings_save_button").text("Error");
+                }else{
+                    $(".settings_save_button").addClass("done_button");
+                    $(".settings_save_button").text("Done");
+                }    
+            });
+        });
+
+        $(".settings_input").click(function(e){
+            // enable Save button only when an input changed
+            $(".settings_save_button").removeClass("pure-button-disabled error_button done_button");
+            $(".settings_save_button").text("Save");
+        });
+
+
 
     	var tools_list = [];
 

@@ -1,6 +1,6 @@
 @font-face {
     font-family: Fabfont;
-    src: url(OpenSans-Light.ttf);
+    src: url(../fonts/OpenSans-Light.ttf);
 }
 
 body {
@@ -25,6 +25,43 @@ nav{
     background-color: #2E3865;
     height: 50px;
     box-shadow: 0px 3px 5px 0px rgba(188,188,188,1);
+}
+
+
+.settings_button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background :none;
+}
+
+.settings_modal{
+    background:#EEEEEE;
+    padding:40px;
+    
+}
+
+.settings_modal_close{
+    position: absolute;
+    right: 0;
+    top: 0;
+    background :none;
+}
+
+.settings_save_button{
+    position: absolute;
+    background: #5DAA35;
+    color: #EEEEEE;
+    right: 10%;
+}
+
+.error_button{
+    background: #91331E;
+    color: #EEEEEE;
+}
+.done_button{
+    background: #2E3865;
+    color: #EEEEEE;
 }
 
 h3 {

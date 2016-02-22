@@ -2,8 +2,8 @@
     "app_name": "FabMo-Tool-Minder-Desktop", 
     "window": {
         "title": "FabMo-Tool-Minder-Desktop", 
-        "toolbar": false, 
-        "icon": "./fabmo.png",
+        "toolbar": true, 
+        "icon": "./images/fabmo.png",
         "min_height": 500,
         "min_width": 450,
         "height": 500, 
@@ -20,7 +20,8 @@
         "node-uuid": ">0.0.0",
         "uniq": "1.0.1", 
         "opener":"1.4.1",
-        "restify": "> 0.0.0"
+        "restify": ">0.0.0",
+        "nconf": ">0.0.0"
     }, 
     "scripts": {
         "start": "nodewebkit"

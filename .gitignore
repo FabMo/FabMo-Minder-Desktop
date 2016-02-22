@@ -83,3 +83,6 @@ $RECYCLE.BIN/
 build/nw_bin
 build/Win
 build/OSX
+
+#user settings files
+settings.json
