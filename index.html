@@ -228,7 +228,7 @@
 	    				'<div class="wifi"><img src="images/wifi110.png"></div>' +
 	    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
 	    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
-                        '<div class="job_progress c100 p'+(tool.old_percentage||0)+' very_small"><span>'+(tool.old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
+                        '<div class="'+((tool.old_job)?'':'hidden')+' job_progress c100 p'+(tool.old_percentage||0)+' very_small"><span>'+(tool.old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
 	    				'<p class="ipAddress">' + ip + '</p>' +
 	    				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
 	    				'</div></div>';
@@ -253,7 +253,8 @@
 	    				}else{
 		    				$('.'+tool.hostname+' .job_label').text(''); 
 		    				$('.'+tool.hostname+' .job_title').text('');
-                            $('.'+tool.hostname+' .job_progress').addClass("hidden");
+                            $('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
+                            percentage="";
 	    				}
 	  				    tool.old_percentage=percentage;
 	    				tool.old_state=state;
