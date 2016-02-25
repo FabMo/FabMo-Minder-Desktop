@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/pure.min.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/spinner.css" />
+    <link rel="stylesheet" href="css/circle.css" />
     <script src="js/detection_service/server.js"></script>
   </head>
 
@@ -23,6 +24,30 @@
 			  <div class="double-bounce1"></div>
 			  <div class="double-bounce2"></div>
 			</div>
+            <!--
+            <div class="pure-g">
+                <div class="pure-u-1-12"></div>
+                <div class="panel pure-u-5-6"> 
+                    <div class="wifi"><img src="images/wifi110.png"></div> 
+                    <h3 class="toolName">tool.hostname</h3>
+                    <div class="statusColor"></div>
+                    <p class="statusTitle">tool.old_state</p> 
+                    <div class="job">
+                        <span class="job_label">Job : </span>
+                        <span class="job_title">job.gc</span>
+                        <div class="job_progress c100 p12 very_small">
+                            <span>12%</span>
+                            <div class="slice">
+                                <div class="bar"></div>
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                    </div> 
+                    <p class="ipAddress">ip</p> 
+                    <a class="goHere" href="http://ip:port"><img src="images/newwindow.png"></a> 
+                </div>
+            </div>
+            -->
     </div>
 
     <div class="easy-modal settings_modal" id="settings_modal">
@@ -61,7 +86,6 @@
     opener = require('opener');
     nconf = require('nconf');
     $(document).ready(function() {
-        alert('hello !');
     	var gui = require('nw.gui');
     	var win = gui.Window.get();
     	var tray;
@@ -204,6 +228,7 @@
 	    				'<div class="wifi"><img src="images/wifi110.png"></div>' +
 	    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
 	    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
+                        '<div class="job_progress c100 p'+(tool.old_percentage||0)+' very_small"><span>'+(tool.old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
 	    				'<p class="ipAddress">' + ip + '</p>' +
 	    				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
 	    				'</div></div>';
@@ -221,12 +246,16 @@
 
 	    				if(job){
 		    				$('.'+tool.hostname+' .job_label').text('Job : '); 
-		    				$('.'+tool.hostname+' .job_title').text(job);  
+		    				$('.'+tool.hostname+' .job_title').text(job);
+                            percentage=Math.round((data.data.status.line/data.data.status.nb_lines)*100);
+                            $('.'+tool.hostname+' .job_progress').removeClass().addClass("job_progress c100 p"+percentage+" very_small");
+                            $('.'+tool.hostname+' .job_progress span').text(percentage+' %');
 	    				}else{
 		    				$('.'+tool.hostname+' .job_label').text(''); 
-		    				$('.'+tool.hostname+' .job_title').text('');  
+		    				$('.'+tool.hostname+' .job_title').text('');
+                            $('.'+tool.hostname+' .job_progress').addClass("hidden");
 	    				}
-	  				
+	  				    tool.old_percentage=percentage;
 	    				tool.old_state=state;
 	    				tool.old_job=job;
 	    			}).fail(function() {

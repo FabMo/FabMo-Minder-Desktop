@@ -92,11 +92,11 @@ p {
 }
 
 .ipAddress {
-    margin-left: 3em;
+    margin-left: 4em;
 }
 
 .job {
-    margin-left: 3em;
+    margin-left: 4em;
 }
 
 .apologies{
@@ -171,4 +171,9 @@ p {
 
 .manual{
     background-color: #2E3865;
+}
+
+.job_progress{
+    left: 0.1em;
+    bottom: 0.35em;
 }
