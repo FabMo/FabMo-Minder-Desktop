@@ -61,6 +61,7 @@
     opener = require('opener');
     nconf = require('nconf');
     $(document).ready(function() {
+        alert('hello !');
     	var gui = require('nw.gui');
     	var win = gui.Window.get();
     	var tray;
@@ -155,6 +156,7 @@
             // Save the configuration object to disk
             nconf.save(function (err) {
                 if(err){
+                    alert("Error saving the configuration : "+err);
                     $(".settings_save_button").addClass("error_button");
                     $(".settings_save_button").text("Error");
                 }else{
