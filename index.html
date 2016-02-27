@@ -165,7 +165,7 @@
             $(".settings_save_button").removeClass("error_button done_button").addClass("pure-button-disabled");
             $(".settings_save_button").text("Save");
             //load settings config
-            nconf.use('file', { file: './settings.json' });
+            nconf.use('file', { file: gui.App.dataPath+'/settings.json' });
 
             $("#min_tray_action").prop("checked",nconf.get('tray:reduce_on_minimize'));
             $("#close_tray_action").prop("checked",nconf.get('tray:reduce_on_close'));
