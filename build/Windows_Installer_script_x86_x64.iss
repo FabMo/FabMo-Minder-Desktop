@@ -44,7 +44,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Icons]
 Name: "{group}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
-Name: "{userstartup}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
 Name: "{userdesktop}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"; Tasks: desktopicon
 
 [Run]
