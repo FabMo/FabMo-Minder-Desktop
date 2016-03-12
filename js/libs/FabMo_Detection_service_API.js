@@ -23,11 +23,28 @@ function ChooseBestWayToConnect(tool,callback){
 	// Based on this priority : USB > ethernet > wifi > wifi-direct
 	if (!callback)
 		throw "this function need a callback to work !";
-
 	list_itr = [];
 	for(var idx in tool.network){
 		list_itr.push(tool.network[idx].interface);
 	}
+
+	var hasEmbeddedItr=false;
+	var EmbededdeItrRegEx='en*';
+  for (var i in list_itr) {
+    if (list_itr[i].match(EmbededdeItrRegEx)) {
+        hasEmbeddedItr=true;
+    }
+  }
+  
+  if(hasEmbeddedItr){
+  	tool.network.forEach(function(val,key){
+			if(val.interface.match(EmbededdeItrRegEx))
+			{
+				callback(val.ip_address,tool.server_port);
+				return;
+			}
+		});
+  }
 
 	if(list_itr.indexOf("usb0") > -1)
 	{
