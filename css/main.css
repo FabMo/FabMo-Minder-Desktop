@@ -11,7 +11,7 @@ body {
 }
 
 h1 {
-    margin-top:0px;
+    margin-top:0;
     padding-top: 5px;
     font-family: Fabfont;
     font-weight: 100; 
@@ -25,7 +25,7 @@ h1 {
 nav{
     background-color: #2E3865;
     height: 50px;
-    box-shadow: 0px 3px 5px 0px rgba(188,188,188,1);
+    box-shadow: 0 3px 5px 0 rgba(188,188,188,1);
 }
 
 
@@ -83,7 +83,7 @@ p {
     background-color: #F6F6F6;
     margin: .7em;
     border-radius: 5px;
-    box-shadow: 1px 1px 5px 0px rgba(188,188,188,1);
+    box-shadow: 1px 1px 5px 0 rgba(188,188,188,1);
 }
 
 .toolName {
@@ -152,6 +152,13 @@ p {
     padding-top: 2.5px;
 }
 
+.minimize_button{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0 4px 0 4px;
+    background: none;
+}
 
 .running{
     background-color: #5DAA35;

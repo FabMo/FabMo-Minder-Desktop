@@ -1,5 +1,5 @@
 #define MyAppName "FabMo Tool Minder"
-#define MyAppVersion "1.2.0"
+#define MyAppVersion "1.3.0"
 #define MyAppPublisher "Jimmy Lucidarme"
 #define MyAppURL "http://www.gofabmo.org"
 
@@ -37,7 +37,7 @@ Source: "nw_bin/x64/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dco
 Source: "nw_bin/x86/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dcompiler_47.dll,nwjc.exe,pdf.dll" ; DestDir: "{app}"; Check: not Is64BitInstallMode; Flags: solidbreak ignoreversion recursesubdirs
 ; Place all common files here, first one should be marked 'solidbreak'
 Source: "../*"; Excludes: "build,.git,.gitattributes,.gitignore,node_modules"; DestDir: "{app}"; Flags: ignoreversion solidbreak recursesubdirs
-Source: "../node_modules/*"; Excludes: "nodewebkit"; DestDir: "{app}/node_modules"; Flags: ignoreversion solidbreak recursesubdirs
+Source: "../node_modules/*"; Excludes: "nw"; DestDir: "{app}/node_modules"; Flags: ignoreversion solidbreak recursesubdirs
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:DesktopIcon}"
