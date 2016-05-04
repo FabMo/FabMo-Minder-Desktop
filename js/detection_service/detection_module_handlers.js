@@ -7,14 +7,14 @@ var detection = require('./detection_tool');
 
 
 
-/* 
+/*
 the where_is_my_tool function use the detection tool to get the list of devices detected,.
 It will then compute it to transform it in an array of detectable machines.
 It will filter the non-used interfaces and only display the networks that are reacheable.
 
 	How to use :  Currently the function is only implemented as a web request. so you need to do a GET request at /where_is_my_tool to get the list.
 
-	Example : 
+	Example :
 	[
 		{
 			"hostname" : "My_machine",
@@ -75,7 +75,7 @@ exports.where_is_my_tool = function(req, res, next) {
 
 
 			var new_device_array = []; // new JSON object, represent the devices that you can connect to.
-			
+
 			// new JSON object constructor
 			for (var single_dev in count_array)
 			{
@@ -106,5 +106,3 @@ exports.where_is_my_tool = function(req, res, next) {
 	});
     next();
 };
-
-

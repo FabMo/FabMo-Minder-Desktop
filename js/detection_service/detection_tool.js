@@ -78,6 +78,7 @@ var util=require('util');
 var EventEmitter = require('events').EventEmitter;
 var dgram = require('dgram');
 var os = require('os');
+var bonjour = require('bonjour')();
 
 //message that will be broadcast on the network
 var REQ = "R U A SBT ?\0";
@@ -182,6 +183,15 @@ var detection = function(t) {
 			socket.send(new Buffer(REQ), 0, REQ.length, broadcastPort, "192.168.10.1", function (err) {});
 		}
 
+		//bonjour protocol support
+		bonjour.find({type:"fabmo"},function(service){
+			var device={};
+			try{
+				device = JSON.parse('{"device" : '+service.txt.fabmo  + ',"active_ip" : "'+ service.rinfo.address+'"}');
+			}catch(ex){console.log("invalid JSON :"+service.txt.fabmo);}
+			devices.push(device);
+			that.emit('new_device',device);
+		});
 
 
 	this.on('newListener', function(listener) {

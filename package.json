@@ -22,7 +22,8 @@
     "nw": "^0.12.3",
     "opener": "^1.4.1",
     "restify": ">0.0.0",
-    "uniq": "1.0.1"
+    "uniq": "1.0.1",
+    "bonjour":"jlucidar/bonjour"
   },
   "scripts": {
     "start": "nw"
