@@ -1,0 +1,452 @@
+<!DOCTYPE HTML5>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Sending your file to your FabMo device...</title>
+	<link rel="stylesheet" href="css/pure.min.css" />
+	<link rel="stylesheet" href="css/main.css" />
+	<link rel="stylesheet" href="css/spinner.css" />
+	<link rel="stylesheet" href="css/circle.css" />
+</head>
+
+
+<!-- Body of the page -->
+
+<body>
+	<nav>
+		<h1>Finding your FabMo device ...</h1>
+        <a class="abort_button pure-button" href="index.html">Abort</a>
+	</nav>
+
+	<div class="fabmo_devices_list">
+
+		<div class="spinner">
+			<div class="double-bounce1"></div>
+			<div class="double-bounce2"></div>
+		</div>
+
+    </div>
+
+        <script src="js/libs/jquery.js"></script>
+        <script type="text/javascript" src="js/libs/jquery.easyModal.js"></script>
+        <script src="js/libs/FabMo_Detection_service_API.js"></script>
+        <script src="js/libs/fabmo.js"></script>  
+
+
+        <script type="text/javascript">
+       	    path = require('path');
+       	    fs = require('fs');
+            opener = require('opener');
+        	nconf = require('nconf');
+            req_mod=require('request');
+            FormData=require('form-data');
+            gui = require('nw.gui');
+
+            file_send = false;
+
+        	$(document).ready(function() {
+        		var win = gui.Window.get();
+        		var tray;
+        		var menu = new gui.Menu();
+        		var exit_button = new gui.MenuItem({
+        			type: 'normal',
+        			label: 'exit'
+        		});
+        		menu.append(exit_button);
+
+    	// Get the minimize event
+
+    	win.on('close', function() {
+    		if(nconf.get('tray:reduce_on_close')){
+                // Hide window
+                this.hide();
+
+        		// Show tray
+        		tray = new gui.Tray({
+        			title: 'FabMo Tool Minder',
+        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			icon: './images/fabmo.png'
+        		});
+        		tray.menu = menu;
+        		// Show window and remove tray when clicked
+        		tray.on('click', function() {
+        			win.show();
+        			this.remove();
+        			tray = null;
+        		});
+        	}else{
+        		win.close(true);
+        	}
+        });
+
+    	win.on('minimize', function() {
+    		if(nconf.get('tray:reduce_on_minimize')){
+                // Hide window
+                this.hide();
+
+        		// Show tray
+        		tray = new gui.Tray({
+        			title: 'FabMo Tool Minder',
+        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			icon: './images/fabmo.png'
+        		});
+        		tray.menu = menu;
+        		// Show window and remove tray when clicked
+        		tray.on('click', function() {
+        			win.show();
+        			this.remove();
+        			tray = null;
+        		});
+        	}else{
+               // do noting act like the normal behavior
+             }
+           });
+
+    	exit_button.on('click', function() {
+    		win.close(true);
+    	});
+
+    	var tools_list = [];
+
+    	function build_job(callback){
+            callback({
+                file: fs.createReadStream(global.cmd_line_args._[0]) || ["G01X1Y1","G01X0Y0","G01X1Y1","G01X0Y0"],
+                name: global.cmd_line_args.name || path.basename(global.cmd_line_args._[0]),
+                filename : global.cmd_line_args.filename || path.basename(global.cmd_line_args._[0]),
+                description : global.cmd_line_args.description || "file posted through the FabMo Tool Minder"
+            });
+
+    	}
+
+
+    	function submit_job(device_address,job){
+    		var post_callback = function(err,data){
+    			if(err) console.log(err);
+    			else{
+                    opener(device_address+"#/app/job-manager"); // open the web browser
+                    window.location="./index.html";
+                }
+    		};
+    		postUpload(device_address+'/job',job,{},post_callback,post_callback);
+    	}
+
+			postUpload = function(url, data, metadata, errback, callback, key) {
+				//var url = this._url(url);
+				callback = callback || function() {};
+				errback = errback || function() {};
+
+				// The POST Upload is done in two pieces.  First is a metadata post which transmits
+				// an array of json objects that describe the files in question.
+				// Following the metadata is a multipart request for each uploaded file.
+				// So for N files, you have N+1 requests, the first for the metadata, and then N remaining for the files themselves.
+				if(!Array.isArray(data)) {
+					data = [data];
+				}
+				var meta = {
+					files : [],
+					meta : metadata
+				};
+
+				var files = [];
+				data.forEach(function(item) {
+					files.push(item.file);
+					delete item.file;
+					meta.files.push(item);
+				});
+				var onMetaDataUploadComplete = function(err, k) {
+					if(err) {
+						return errback(err);
+					}
+					var requests = [];
+					files.forEach(function(file, index) {
+						var fd = new FormData();
+						fd.append('key', k);
+						fd.append('index', index);
+						fd.append('file', file);
+                        console.log(file);
+                        console.log(fd);
+						var onFileUploadComplete = function(res) {
+                            console.log(res);
+                            res.setEncoding("utf8");
+                            res.on("data",function(raw_data){
+                            if(res.statusCode===200){
+                                var response = JSON.parse(raw_data);
+                                console.log(response);
+                                switch(response.status) {
+                                    case 'success':
+                                        if(key) {
+                                            err = null;
+                                            data = response.data[key];
+                                        } else {
+                                             err = null;
+                                            data = response.data;
+                                        }
+                                        break;
+
+                                    case 'fail':
+                                        if(key!==undefined) {
+                                            err = response.data[key];
+                                            data = null;
+                                        } else {
+                                            err = response.data;
+                                            data=null;
+                                        }
+                                        break;
+                                    default:
+                                        err = response.message;
+                                        data=null;
+                                        break;
+                                }
+                            }
+                                if(err) {
+                                    // Bail out here too - fail on any one file upload failure
+                                    requests.forEach(function(req) {
+                                        req.abort();
+                                    });
+                                    return errback(err);
+                                }
+                                if(data.status === 'complete') {
+                                    if(key) {
+                                        callback(null, data.data[key]);                     
+                                    } else {
+                                        callback(null, data.data);
+                                    }
+                                }
+                            });
+
+						}.bind(this);
+
+                        request = req_mod({
+                          method: 'post',
+                          uri:url,
+                          port:80,
+                          headers: fd.getHeaders()
+                        });
+                        fd.pipe(request); // form-data module
+                        request.on('response', onFileUploadComplete);
+						//var request = req_mod.post({url:url, formData: data},onMetaDataUploadComplete);
+                        //var request = _post(url, fd, onFileUploadComplete, onFileUploadComplete);
+						requests.push(request);
+					}.bind(this));
+				}.bind(this);
+				_post(url, meta, onMetaDataUploadComplete, onMetaDataUploadComplete, 'key');
+			};
+
+            _post = function(url, data, errback, callback, key, redirect) {
+                if(!redirect) {
+                    //var url = this._url(url);
+                }
+                callback = callback || function() {};
+                errback = errback || function() {};
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+
+                if(!(data instanceof FormData)) {
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    if(typeof data != 'string') {
+                        data = JSON.stringify(data);
+                    }
+                }
+
+                xhr.onload = function() {
+                    switch(xhr.status) {
+                        case 200:
+                            var response = JSON.parse(xhr.responseText);
+                            switch(response.status) {
+                                case 'success':
+                                    if(key) {
+                                        callback(null, response.data[key]);
+                                    } else {
+                                        callback(null, response.data);
+                                    }
+                                    break;
+
+                                case 'fail':
+                                    if(key) {
+                                        errback(response.data[key]);
+                                    } else {
+                                        errback(response.data);
+                                    }
+                                    break;
+                                default:
+                                    errback(response.message);
+                                    break;
+                            }
+                        break;
+
+                        case 300:
+                            // TODO infinite loop issue here?
+                            try {
+                                response = JSON.parse(xhr.responseText);
+                                if(response.url) {
+                                    _post(response.url, data, errback, callback, key, true);
+                                } else {
+                                    console.error("Bad redirect in FabMo API");
+                                }
+                            } catch(e) {
+                                console.error(e);
+                            }
+                            break;
+
+                        default:
+                            console.error("Got a bad response from server: " + xhr.status);
+                            break;
+                    }
+                }.bind(this);
+                xhr.send(data);
+                return xhr;
+            };
+
+
+
+
+    	function display_tools(tools) {
+    		$('.fabmo_devices_list').empty();
+
+    		if(Object.keys(tools).length<=0) // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
+    		{
+    			$('h1').text("Power up your FabMo device.");
+    			spinner_html=
+                    '<div class="spinner">'+
+                        '<div class="double-bounce1"></div>'+
+                        '<div class="double-bounce2"></div>'+
+                    '</div>'+
+                    "<div class='apologies'>"+
+                        "<p>Sorry. Despite my best efforts, I wasn't able to locate any tools...</p>"+
+                        "<p>I will persist though !</p>"+
+                    "</div> ";
+
+    			$('.fabmo_devices_list').append(spinner_html);
+    		}
+    		else{
+    			$('h1').text("Select a FabMo device");
+    			tools.forEach(function(tool, index, array) {
+    				toolInfo = {};
+
+
+    				ChooseBestWayToConnect(tool, function(ip, port) {
+    					toolInfo.ip = ip;
+    					toolInfo.port = port;
+                        
+                        /************ IF ONLY ONE TOOL ON THE NETWORK, SEND DIRECTLY TO IT ***********/
+    					if(array.length===1 && !file_send){ // a single tool on the network
+                            file_send=true;
+    						build_job(function(job){
+	    						submit_job("http://"+ip+":"+port,job); // send job to tool
+    						});
+    					}
+                        /*****************************************************************************/
+    				});
+                    if(array.length===1){return;}
+
+    				var ip = toolInfo.ip;
+    				var port = toolInfo.port;
+
+    				tool_html = 
+                    '<div class="pure-g '+tool.hostname+'">'+
+                        '<div class="pure-u-1-12"></div>'+
+                        '<div class="panel pure-u-5-6">' +
+    				        '<div class="wifi"><img src="images/wifi110.png"></div>' +
+    				        '<h3 class="toolName">' + tool.hostname + '</h3>' +
+                            '<div class="statusColor '+(tool.old_state||'')+'"></div>'+
+                            '<p class="statusTitle">'+(tool.old_state||'')+'</p>' +
+    				        '<div class="job">'+
+                                '<span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span>'+
+                                '<span class="job_title">'+(tool.old_job||'')+'</span>'+
+                            '</div>' +
+    				        '<div class="'+((tool.old_job)?'':'hidden')+' job_progress c100 p'+(tool.old_percentage||0)+' very_small">'+
+                                '<span>'+(tool.old_percentage||0)+' %</span>'+
+                                '<div class="slice"><div class="bar"></div><div class="fill"></div></div>'+
+                            '</div>'+
+    				        '<p class="ipAddress">' + ip + '</p>' +
+    				        '<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+    				    '</div>'+
+                    '</div>';
+
+    				$('.fabmo_devices_list').append(tool_html);
+
+
+    				$.ajax({
+    					url: 'http://' + ip + ':' + port + '/status',
+    					type: "GET"
+    				}).done(function(data) {
+    					var state = data.data.status.state;
+    					var job = (data.data.status.job)?data.data.status.job.name:undefined;
+    					$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
+    					$('.'+tool.hostname+' .statusTitle').text(state);
+
+    					if(job){
+    						$('.'+tool.hostname+' .job_label').text('Job : '); 
+    						$('.'+tool.hostname+' .job_title').text(job);
+    						percentage=Math.round((data.data.status.line/data.data.status.nb_lines)*100);
+    						$('.'+tool.hostname+' .job_progress').removeClass().addClass("job_progress c100 p"+percentage+" very_small");
+    						$('.'+tool.hostname+' .job_progress span').text(percentage+' %');
+    					}else{
+    						$('.'+tool.hostname+' .job_label').text(''); 
+    						$('.'+tool.hostname+' .job_title').text('');
+    						$('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
+    						percentage="";
+    					}
+    					tool.old_percentage=percentage;
+    					tool.old_state=state;
+    					tool.old_job=job;
+    				}).fail(function() {
+    					err = "Link API not responding !";
+    					console.log(err);
+    				});
+
+    			});
+
+    			$('.goHere').on("click", function(e) {
+    				e.preventDefault();
+                    device_addr = this.href;
+    				build_job(function(job){
+	    				submit_job(device_addr,job); // send job to tool
+    				});
+	    			return false;
+    			});
+    		}
+    	}
+
+
+    	setInterval(function() {
+    		DetectToolsOnTheNetworks(
+    			function(err, data) {
+    				if (err) {
+    					console.error(err);
+    				} else {
+    					detected_tool_registered_index = [];
+    					for (var detected_tool in data) {
+    						tool_already_registered = false;
+    						for (var registered_tool in tools_list) {
+    							if (data[detected_tool].hostname === tools_list[registered_tool].hostname) { // if tool is still present.
+    								tool_already_registered = true;
+    								detected_tool_registered_index.push(registered_tool);
+    							}
+    						}
+    						if (!tool_already_registered) { // new tool
+    							detected_tool_registered_index.push(tools_list.push(data[detected_tool]) - 1); // add the tool to the list and its index to the dedicated array
+    						}
+    					}
+    					for (var registered_tool_index in tools_list) {
+    						if (detected_tool_registered_index.indexOf(registered_tool_index) !== -1) { // if the registered tool was detected
+    							tools_list[registered_tool_index].unregister_counter = 0; // reset the unregister counter
+    						} else {
+    							tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
+    						}
+    						if (tools_list[registered_tool_index].unregister_counter > 4) { // delete the tool from the list after 5 times without detection.
+    							delete tools_list[registered_tool_index];
+    						}
+    					}
+    					display_tools(tools_list);
+    				}
+    			});
+    	}, 2000);
+
+    });
+
+  </script>
+</body>
+</html>

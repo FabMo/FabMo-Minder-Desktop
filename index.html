@@ -94,11 +94,33 @@
         <script type="text/javascript">
         	opener = require('opener');
         	nconf = require('nconf');
+            parse_args = require('minimist');
+            gui = require('nw.gui');
         	var AutoLaunch = require('auto-launch');
         	var appLauncher = new AutoLaunch({name: 'FabMo Tool Minder'});
+            global.cmd_line_args = {};
+
+            gui.App.on('open', function(cmdline) {
+              var args = cmdline.split(" ").slice(1);
+              if (args[0]==="."){ // avoid bug while running from source.
+                args.slice(1);
+              }
+              global.cmd_line_args = parse_args(args);
+              window.location.reload();
+              window.location = "./launch_file.html";
+            });
+
+            if(gui.App.argv){
+                global.cmd_line_args = parse_args(gui.App.argv);
+                if( !global.fileTransmittedViaArgv && gui.App.argv.length >= 1 && gui.App.argv[0]){
+                    global.fileTransmittedViaArgv = true;
+                    window.location.reload();
+                    window.location = "./launch_file.html";
+                }
+
+            }
 
         	$(document).ready(function() {
-        		var gui = require('nw.gui');
         		var win = gui.Window.get();
         		var tray;
         		var menu = new gui.Menu();

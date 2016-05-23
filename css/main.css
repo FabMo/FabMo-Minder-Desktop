@@ -29,6 +29,18 @@ nav{
 }
 
 
+.abort_button{
+    float: right;
+    display: block;
+    top: 0;
+    position: absolute;
+    right: 0;
+    background: rgb(57, 68, 121);
+    color: #EEEEEE;
+    height: inherit;
+    padding: 15px;
+}
+
 .settings_button{
     position: absolute;
     top: 0;

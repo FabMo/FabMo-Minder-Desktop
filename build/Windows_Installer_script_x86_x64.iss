@@ -1,5 +1,5 @@
 #define MyAppName "FabMo Tool Minder"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.4.0"
 #define MyAppPublisher "Jimmy Lucidarme"
 #define MyAppURL "http://www.gofabmo.org"
 
@@ -48,3 +48,27 @@ Name: "{userdesktop}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"
 
 [Run]
 Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; Description: {cm:LaunchProgram}; Flags: postinstall shellexec
+
+
+; add folder to the Path for command line execution
+[Registry]
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \
+    ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; \
+    Check: NeedsAddPath('{app}')
+
+[Code]
+function NeedsAddPath(Param: string): boolean;
+var
+  OrigPath: string;
+begin
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE,
+    'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+    'Path', OrigPath)
+  then begin
+    Result := True;
+    exit;
+  end;
+  // look for the path with leading and trailing semicolon
+  // Pos() returns 0 if not found
+  Result := Pos(';' + Param + ';', ';' + OrigPath + ';') = 0;
+end;
