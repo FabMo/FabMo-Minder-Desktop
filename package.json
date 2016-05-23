@@ -30,7 +30,7 @@
     "uniq": "1.0.1"
   },
   "scripts": {
-    "start": "nw"
+    "start": "nw ."
   },
   "name": "FabMo-Tool-Minder-Desktop"
 }
