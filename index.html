@@ -88,7 +88,7 @@
         <script src="js/libs/jquery.js"></script>
         <script type="text/javascript" src="js/libs/jquery.easyModal.js"></script>
         <script src="js/libs/FabMo_Detection_service_API.js"></script>
-        <script src="js/libs/fabmo.js"></script>  
+        <script src="js/libs/fabmo.js"></script>
 
 
         <script type="text/javascript">
@@ -238,7 +238,7 @@
             	}else{
             		$(".settings_save_button").addClass("done_button");
             		$(".settings_save_button").text("Done");
-            	}    
+            	}
             });
           });
 
@@ -248,9 +248,7 @@
             $(".settings_save_button").text("Save");
           });
 
-
-
-    	var tools_list = [];
+		  last_tools=[];
 
     	function display_tools(tools) {
     		$('.fabmo_devices_list').empty();
@@ -275,12 +273,21 @@
     				var port = toolInfo.port;
 
 
+						var old_state,old_job,old_percentage;
+						if(last_tools && last_tools[tool.hostname]){
+							old_percentage =last_tools[tool.hostname].percentage;
+							old_state =last_tools[tool.hostname].state;
+							old_job =last_tools[tool.hostname].job;
+						}
+
+
+
 
     				tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
     				'<div class="wifi"><img src="images/wifi110.png"></div>' +
-    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(tool.old_state||'')+'"></div><p class="statusTitle">'+(tool.old_state||'')+'</p>' +
-    				'<div class="job"><span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span><span class="job_title">'+(tool.old_job||'')+'</span></div>' +
-    				'<div class="'+((tool.old_job)?'':'hidden')+' job_progress c100 p'+(tool.old_percentage||0)+' very_small"><span>'+(tool.old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
+    				'<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(old_state||'')+'"></div><p class="statusTitle">'+(old_state||'')+'</p>' +
+    				'<div class="job"><span class="job_label">'+((old_job)?'Job : ':'')+'</span><span class="job_title">'+(old_job||'')+'</span></div>' +
+    				'<div class="'+((old_job)?'':'hidden')+' job_progress c100 p'+(old_percentage||0)+' very_small"><span>'+(old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
     				'<p class="ipAddress">' + ip + '</p>' +
     				'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
     				'</div></div>';
@@ -293,24 +300,25 @@
     				}).done(function(data) {
     					var state = data.data.status.state;
     					var job = (data.data.status.job)?data.data.status.job.name:undefined;
-    					$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
-    					$('.'+tool.hostname+' .statusTitle').text(state);
 
+							$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
+							$('.'+tool.hostname+' .statusTitle').text(state);
     					if(job){
-    						$('.'+tool.hostname+' .job_label').text('Job : '); 
+    						$('.'+tool.hostname+' .job_label').text('Job : ');
     						$('.'+tool.hostname+' .job_title').text(job);
     						percentage=Math.round((data.data.status.line/data.data.status.nb_lines)*100);
     						$('.'+tool.hostname+' .job_progress').removeClass().addClass("job_progress c100 p"+percentage+" very_small");
     						$('.'+tool.hostname+' .job_progress span').text(percentage+' %');
     					}else{
-    						$('.'+tool.hostname+' .job_label').text(''); 
+    						$('.'+tool.hostname+' .job_label').text('');
     						$('.'+tool.hostname+' .job_title').text('');
     						$('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
     						percentage="";
     					}
-    					tool.old_percentage=percentage;
-    					tool.old_state=state;
-    					tool.old_job=job;
+							last_tools[tool.hostname]={};
+    					last_tools[tool.hostname].percentage=percentage;
+    					last_tools[tool.hostname].state=state;
+    					last_tools[tool.hostname].job=job;
     				}).fail(function() {
     					err = "Link API not responding !";
     					console.log(err);
@@ -333,30 +341,7 @@
     				if (err) {
     					console.error(err);
     				} else {
-    					detected_tool_registered_index = [];
-    					for (var detected_tool in data) {
-    						tool_already_registered = false;
-    						for (var registered_tool in tools_list) {
-    							if (data[detected_tool].hostname === tools_list[registered_tool].hostname) { // if tool is still present.
-    								tool_already_registered = true;
-    								detected_tool_registered_index.push(registered_tool);
-    							}
-    						}
-    						if (!tool_already_registered) { // new tool
-    							detected_tool_registered_index.push(tools_list.push(data[detected_tool]) - 1); // add the tool to the list and its index to the dedicated array
-    						}
-    					}
-    					for (var registered_tool_index in tools_list) {
-    						if (detected_tool_registered_index.indexOf(registered_tool_index) !== -1) { // if the registered tool was detected
-    							tools_list[registered_tool_index].unregister_counter = 0; // reset the unregister counter
-    						} else {
-    							tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
-    						}
-    						if (tools_list[registered_tool_index].unregister_counter > 4) { // delete the tool from the list after 5 times without detection.
-    							delete tools_list[registered_tool_index];
-    						}
-    					}
-    					display_tools(tools_list);
+    					display_tools(data);
     				}
     			});
     	}, 2000);

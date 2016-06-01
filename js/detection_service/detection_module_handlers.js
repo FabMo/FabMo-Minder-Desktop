@@ -5,7 +5,7 @@ var uniq = require('uniq');
 var http = require('http');
 var detection = require('./detection_tool');
 
-
+var tools_list = [];
 
 /*
 the where_is_my_tool function use the detection tool to get the list of devices detected,.
@@ -46,7 +46,7 @@ It will filter the non-used interfaces and only display the networks that are re
 */
 
 exports.where_is_my_tool = function(req, res, next) {
-		var detect = new detection(1100);// timeout en millisecondes;
+		var detect = new detection(1200);// timeout en millisecondes;
 		detect.on('devices', function (data) {
 		/*****************************************************************/
 		if( data === []) // false in every case
@@ -102,7 +102,30 @@ exports.where_is_my_tool = function(req, res, next) {
 			}
 		}
 			/*********************************************************************/
-		res.json(new_device_array);
+			detected_tool_registered_index = [];
+			for (var detected_tool in new_device_array) {
+				tool_already_registered = false;
+				for (var registered_tool in tools_list) {
+					if (new_device_array[detected_tool].hostname === tools_list[registered_tool].hostname) { // if tool is still present.
+						tool_already_registered = true;
+						detected_tool_registered_index.push(registered_tool);
+					}
+				}
+				if (!tool_already_registered) { // new tool
+					detected_tool_registered_index.push(tools_list.push(new_device_array[detected_tool]) - 1); // add the tool to the list and its index to the dedicated array
+				}
+			}
+			for (var registered_tool_index in tools_list) {
+				if (detected_tool_registered_index.indexOf(registered_tool_index) !== -1) { // if the registered tool was detected
+					tools_list[registered_tool_index].unregister_counter = 0; // reset the unregister counter
+				} else {
+					tools_list[registered_tool_index].unregister_counter++; //if not increment the unregister counter
+				}
+				if (tools_list[registered_tool_index].unregister_counter > 4) { // delete the tool from the list after 5 times without detection.
+					tools_list.splice(registered_tool_index,1);
+				}
+			}
+		res.json(tools_list);
 	});
     next();
 };

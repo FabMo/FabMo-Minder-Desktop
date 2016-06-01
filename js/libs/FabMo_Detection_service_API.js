@@ -5,11 +5,11 @@ function FabMoAutoConnect(callback,linker_port){
 		throw "this function need a callback to work !";
 	var that=this;
 	DetectToolsOnTheNetworks(function(err,list_tools){
-		if (err){ callback(err);return;} 
+		if (err){ callback(err);return;}
 		SelectATool(list_tools,function(err,tool){
 			if (err){ callback(err);return;}
 			ChooseBestWayToConnect(tool,function(ip_address,port){
-				callback(undefined, 'http://'+ip_address +':'+(port ? port.toString() : '8080'));	
+				callback(undefined, 'http://'+ip_address +':'+(port ? port.toString() : '8080'));
 			});
 		});
 	},linker_port);
@@ -17,10 +17,11 @@ function FabMoAutoConnect(callback,linker_port){
 
 
 
-function ChooseBestWayToConnect(tool,callback){ 
+function ChooseBestWayToConnect(tool,callback){
 	// Returns an IP address and port
 	// Automatic selection of the best way to talk to the tool
 	// Based on this priority : USB > ethernet > wifi > wifi-direct
+	if(!tool){callback(null);return;}
 	if (!callback)
 		throw "this function need a callback to work !";
 	list_itr = [];
@@ -35,7 +36,7 @@ function ChooseBestWayToConnect(tool,callback){
         hasEmbeddedItr=true;
     }
   }
-  
+
   if(hasEmbeddedItr){
   	tool.network.forEach(function(val,key){
 			if(val.interface.match(EmbededdeItrRegEx))
@@ -75,7 +76,7 @@ function ChooseBestWayToConnect(tool,callback){
 				return;
 			}
 		});
-	}	
+	}
 	if(list_itr.indexOf("wlan0") > -1)
 	{
 		tool.network.forEach(function(val,key){
@@ -95,7 +96,7 @@ function ChooseBestWayToConnect(tool,callback){
 				return;
 			}
 		});
-	}		
+	}
 }
 
 
@@ -128,7 +129,7 @@ function SelectATool(list_tools,callback){
 		callback(undefined,list_tools[0]);
 	}
 	else
-	{	
+	{
 
 		if($('#device_picker').length){
 			list_tools.forEach(function(val,key){
@@ -144,7 +145,7 @@ function SelectATool(list_tools,callback){
 				if($("input[name='devices']:checked").length)
 					callback(undefined,JSON.parse($("input[name='devices']:checked").val()));
 			});
-			$('#device_picker').trigger('activated',[this]);		
+			$('#device_picker').trigger('activated',[this]);
 		}
 		else{
 			var $dialog = $('<div/>').addClass('dialog');
@@ -168,7 +169,5 @@ function SelectATool(list_tools,callback){
 
 		}
 	}
- 
+
 }
-
-

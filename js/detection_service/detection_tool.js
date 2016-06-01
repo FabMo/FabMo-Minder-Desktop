@@ -1,8 +1,8 @@
 /*
-	The detection service is a UDP protocol for finnding other devices on the network. It provides really basic information : 
+	The detection service is a UDP protocol for finnding other devices on the network. It provides really basic information :
 		- the hostname of the tool
 		- the port where the engine is running
-		- an Array of all its network interfaces		- 
+		- an Array of all its network interfaces		-
 		- the interface used for replying.
 
 	How to use :
@@ -101,7 +101,7 @@ var broadcastPort = 24862; // = 7777 without conversion
 
 
 //ennoying function but no other way to deal with it in windows
-// bypass the broadcast problem on windows by calculating the theorical value of the broadcast address. 
+// bypass the broadcast problem on windows by calculating the theorical value of the broadcast address.
 function send_broadcast_to_every_interfaces(){
 	Object.keys(os.networkInterfaces()).forEach(function(key,index,arr){ //val = ip adresses , key = name of interface
 		var networks_list = this;
@@ -111,7 +111,7 @@ function send_broadcast_to_every_interfaces(){
 				if (val2.address.split('.')[0] >= 192 &&  val2.address.split('.')[0] <= 223){ //class C
 					broadcastAddress = val2.address.split('.')[0] +'.'+ val2.address.split('.')[1] +'.'+ val2.address.split('.')[2] + '.255';
 				}
-				else if (val2.address.split('.')[0] >= 128 &&  val2.address.split('.')[0] <= 191){ //class B 
+				else if (val2.address.split('.')[0] >= 128 &&  val2.address.split('.')[0] <= 191){ //class B
 					broadcastAddress = val2.address.split('.')[0]  +'.'+ val2.address.split('.')[1] + '.255.255';
 				}
 				else if (val2.address.split('.')[0] >= 1 &&  val2.address.split('.')[0] <= 126) { //class A
@@ -128,7 +128,7 @@ function send_broadcast_to_every_interfaces(){
 		});
 }
 
-// detection function, emit an array with all the devices detected on the network at the end of the timeout t 
+// detection function, emit an array with all the devices detected on the network at the end of the timeout t
 
 var detection = function(t) {
 
@@ -137,7 +137,7 @@ var detection = function(t) {
 	var current_dialog =[];
 	var device;
 	var devices =[];
-	
+
 	var timeout = t || 1100;
 	var that =this;
 	socket.bind(function(){
@@ -184,6 +184,7 @@ var detection = function(t) {
 		}
 
 		//bonjour protocol support
+		/*
 		bonjour.find({type:"fabmo"},function(service){
 			var device={};
 			try{
@@ -192,11 +193,11 @@ var detection = function(t) {
 			devices.push(device);
 			that.emit('new_device',device);
 		});
-
+		*/
 
 	this.on('newListener', function(listener) {
 	});
-	
+
 	setTimeout(function(){
 		if(os.platform()!=='darwin'){socket.close();}
 		that.emit("devices",devices);
