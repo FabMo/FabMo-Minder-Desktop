@@ -105,6 +105,9 @@
               if (args[0]==="."){ // avoid bug while running from source.
                 args.slice(1);
               }
+							if(args[0]===undefined){
+								return;
+							}
               global.cmd_line_args = parse_args(args);
               window.location.reload();
               window.location = "./launch_file.html";
