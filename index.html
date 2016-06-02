@@ -103,9 +103,10 @@
             gui.App.on('open', function(cmdline) {
               var args = cmdline.split(" ").slice(1);
               if (args[0]==="."){ // avoid bug while running from source.
-                args.slice(1);
+                args.shift();
               }
 							if(args[0]===undefined){
+								gui.Window.get().focus();
 								return;
 							}
               global.cmd_line_args = parse_args(args);
