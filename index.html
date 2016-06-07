@@ -130,9 +130,15 @@
 
         }
 
+        function hideTray() {
+            if(tray) {
+                tray.remove();
+                tray = null;
+            }
+        }
+
         function showTray(win) {
-            // Hide window
-            win.hide();
+            if(tray) { return; }
 
             switch(process.platform) {
                 case 'darwin':
@@ -163,89 +169,91 @@
             });
         }
 
-    function displayTools(tools) {
-        $('.fabmo_devices_list').empty();
-        if(Object.keys(tools).length<=0) // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
-        {
-            spinner_html='<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>'+
-            "<div class='apologies'><p>Searching for tools on the network...</p></div> ";
-            $('.fabmo_devices_list').append(spinner_html);
+        function displayTools(tools) {
+            $('.fabmo_devices_list').empty();
+            if(Object.keys(tools).length<=0) // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
+            {
+                spinner_html='<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>'+
+                "<div class='apologies'><p>Searching for tools on the network...</p></div> ";
+                $('.fabmo_devices_list').append(spinner_html);
 
-        }
-        else{
-            tools.forEach(function(tool, index, array) {
-                toolInfo = {};
+            }
+            else{
+                tools.forEach(function(tool, index, array) {
+                    toolInfo = {};
 
 
-                ChooseBestWayToConnect(tool, function(ip, port) {
-                    toolInfo.ip = ip;
-                    toolInfo.port = port;
+                    ChooseBestWayToConnect(tool, function(ip, port) {
+                        toolInfo.ip = ip;
+                        toolInfo.port = port;
+
+                    });
+                    var ip = toolInfo.ip;
+                    var port = toolInfo.port;
+
+
+                        var old_state,old_job,old_percentage;
+                        if(last_tools && last_tools[tool.hostname]){
+                            old_percentage =last_tools[tool.hostname].percentage;
+                            old_state =last_tools[tool.hostname].state;
+                            old_job =last_tools[tool.hostname].job;
+                        }
+
+
+
+
+                    tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
+                    '<div class="wifi"><img src="images/wifi110.png"></div>' +
+                    '<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(old_state||'')+'"></div><p class="statusTitle">'+(old_state||'')+'</p>' +
+                    '<div class="job"><span class="job_label">'+((old_job)?'Job : ':'')+'</span><span class="job_title">'+(old_job||'')+'</span></div>' +
+                    '<div class="'+((old_job)?'':'hidden')+' job_progress c100 p'+(old_percentage||0)+' very_small"><span>'+(old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
+                    '<p class="ipAddress">' + ip + '</p>' +
+                    '<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+                    '</div></div>';
+                    $('.fabmo_devices_list').append(tool_html);
+
+
+                    $.ajax({
+                        url: 'http://' + ip + ':' + port + '/status',
+                        type: "GET"
+                    }).done(function(data) {
+                        var state = data.data.status.state;
+                        var job = (data.data.status.job)?data.data.status.job.name:undefined;
+
+                            $('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
+                            $('.'+tool.hostname+' .statusTitle').text(state);
+                        if(job){
+                            $('.'+tool.hostname+' .job_label').text('Job : ');
+                            $('.'+tool.hostname+' .job_title').text(job);
+                            percentage=Math.round((data.data.status.line/data.data.status.nb_lines)*100);
+                            $('.'+tool.hostname+' .job_progress').removeClass().addClass("job_progress c100 p"+percentage+" very_small");
+                            $('.'+tool.hostname+' .job_progress span').text(percentage+' %');
+                        }else{
+                            $('.'+tool.hostname+' .job_label').text('');
+                            $('.'+tool.hostname+' .job_title').text('');
+                            $('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
+                            percentage="";
+                        }
+                            last_tools[tool.hostname]={};
+                        last_tools[tool.hostname].percentage=percentage;
+                        last_tools[tool.hostname].state=state;
+                        last_tools[tool.hostname].job=job;
+                    }).fail(function() {
+                        err = "Link API not responding !";
+                        console.error(err);
+                    });
 
                 });
-                var ip = toolInfo.ip;
-                var port = toolInfo.port;
 
-
-                    var old_state,old_job,old_percentage;
-                    if(last_tools && last_tools[tool.hostname]){
-                        old_percentage =last_tools[tool.hostname].percentage;
-                        old_state =last_tools[tool.hostname].state;
-                        old_job =last_tools[tool.hostname].job;
-                    }
-
-
-
-
-                tool_html = '<div class="pure-g '+tool.hostname+'"><div class="pure-u-1-12"></div><div class="panel pure-u-5-6">' +
-                '<div class="wifi"><img src="images/wifi110.png"></div>' +
-                '<h3 class="toolName">' + tool.hostname + '</h3>' + '<div class="statusColor '+(old_state||'')+'"></div><p class="statusTitle">'+(old_state||'')+'</p>' +
-                '<div class="job"><span class="job_label">'+((old_job)?'Job : ':'')+'</span><span class="job_title">'+(old_job||'')+'</span></div>' +
-                '<div class="'+((old_job)?'':'hidden')+' job_progress c100 p'+(old_percentage||0)+' very_small"><span>'+(old_percentage||0)+' %</span><div class="slice"><div class="bar"></div><div class="fill"></div></div></div>'+
-                '<p class="ipAddress">' + ip + '</p>' +
-                '<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
-                '</div></div>';
-                $('.fabmo_devices_list').append(tool_html);
-
-
-                $.ajax({
-                    url: 'http://' + ip + ':' + port + '/status',
-                    type: "GET"
-                }).done(function(data) {
-                    var state = data.data.status.state;
-                    var job = (data.data.status.job)?data.data.status.job.name:undefined;
-
-                        $('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
-                        $('.'+tool.hostname+' .statusTitle').text(state);
-                    if(job){
-                        $('.'+tool.hostname+' .job_label').text('Job : ');
-                        $('.'+tool.hostname+' .job_title').text(job);
-                        percentage=Math.round((data.data.status.line/data.data.status.nb_lines)*100);
-                        $('.'+tool.hostname+' .job_progress').removeClass().addClass("job_progress c100 p"+percentage+" very_small");
-                        $('.'+tool.hostname+' .job_progress span').text(percentage+' %');
-                    }else{
-                        $('.'+tool.hostname+' .job_label').text('');
-                        $('.'+tool.hostname+' .job_title').text('');
-                        $('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
-                        percentage="";
-                    }
-                        last_tools[tool.hostname]={};
-                    last_tools[tool.hostname].percentage=percentage;
-                    last_tools[tool.hostname].state=state;
-                    last_tools[tool.hostname].job=job;
-                }).fail(function() {
-                    err = "Link API not responding !";
-                    console.error(err);
+                $('.goHere').on("click", function(e) {
+                    e.preventDefault();
+                    opener(this.href);
+                    return false;
                 });
-
-            });
-
-            $('.goHere').on("click", function(e) {
-                e.preventDefault();
-                opener(this.href);
-                return false;
-            });
+            }
         }
-    }
+        
+
         $(document).ready(function() {
             var win = gui.Window.get();
             trayMenu = new gui.Menu();
@@ -278,6 +286,7 @@
             // Get the minimize event
             win.on('close', function() {
                 if(nconf.get('tray:reduce_on_close')){
+                    win.hide();
                     showTray(this);
                 }else{
                     win.close(true);
@@ -285,6 +294,8 @@
             });
 
             win.on('minimize', function() {
+                // Hide window
+                win.hide();
                 if(nconf.get('tray:reduce_on_minimize')){
                     showTray(this);
                 } else{
@@ -292,97 +303,93 @@
                 }
             });
 
-
-
-
-    $('.settings_modal').easyModal({"overlayClose":false});
-    $('.easy-modal-open').click(function(e) {
-        var target = $(this).attr('href');
-        $(target).trigger('openModal');
-        e.preventDefault();
-    });
-
-    $('.easy-modal-close').click(function(e) {
-        $('.easy-modal').trigger('closeModal');
-    });
-
-    $(".easy-modal").on('openModal',function(e){
-        $(".settings_save_button").removeClass("error_button done_button").addClass("pure-button-disabled");
-        $(".settings_save_button").text("Save");
-        //load settings config
-
-        $("#min_tray_action").prop("checked",nconf.get('tray:reduce_on_minimize'));
-        $("#close_tray_action").prop("checked",nconf.get('tray:reduce_on_close'));
-        $("#startup_action").prop("checked",nconf.get('startup:launch_on_startup'));
-      });
-
-
-    $(".settings_save_button").click(function(e){
-        if($(this).hasClass('pure-button-disabled')) {
-            return;
-        }
-
-        nconf.set('tray:reduce_on_minimize', $("#min_tray_action").prop("checked"));
-        nconf.set('tray:reduce_on_close', $("#close_tray_action").prop("checked"));
-        nconf.set('startup:launch_on_startup', $("#startup_action").prop("checked"));
-
-        if(nconf.get('startup:launch_on_startup')){
-            appLauncher.enable(function(err){
-                if(err){
-                    console.error(err);
-                    //alert("Error enabling the auto-launch on startup: "+err);
-                }
+            win.on('focus', function() {
+                hideTray();
             });
-        }else{
 
-            appLauncher.disable(function(err){
-                if(err){
-                    console.error(err);
-                    //alert("Error disabling the auto-launch on startup: "+err);
-                }
+            $('.settings_modal').easyModal({"overlayClose":false});
+            $('.easy-modal-open').click(function(e) {
+                var target = $(this).attr('href');
+                $(target).trigger('openModal');
+                e.preventDefault();
             });
-        }
+
+            $('.easy-modal-close').click(function(e) {
+                $('.easy-modal').trigger('closeModal');
+            });
+
+            $(".easy-modal").on('openModal',function(e){
+                $(".settings_save_button").removeClass("error_button done_button").addClass("pure-button-disabled");
+                $(".settings_save_button").text("Save");
+                //load settings config
+
+                $("#min_tray_action").prop("checked",nconf.get('tray:reduce_on_minimize'));
+                $("#close_tray_action").prop("checked",nconf.get('tray:reduce_on_close'));
+                $("#startup_action").prop("checked",nconf.get('startup:launch_on_startup'));
+              });
 
 
-        $(".settings_save_button").addClass("pure-button-disabled");
-        // Save the configuration object to disk
-        nconf.save(function (err) {
-            if(err){
-                alert("Error saving the configuration : "+err);
-                $(".settings_save_button").addClass("error_button");
-                $(".settings_save_button").text("Error");
-            }else{
-                $(".settings_save_button").addClass("done_button");
-                $(".settings_save_button").text("Done");
-            }
-            console.log("clsing model")
-            $('.easy-modal').trigger('closeModal');
+            $(".settings_save_button").click(function(e){
+                if($(this).hasClass('pure-button-disabled')) {
+                    return;
+                }
+
+                nconf.set('tray:reduce_on_minimize', $("#min_tray_action").prop("checked"));
+                nconf.set('tray:reduce_on_close', $("#close_tray_action").prop("checked"));
+                nconf.set('startup:launch_on_startup', $("#startup_action").prop("checked"));
+
+                if(nconf.get('startup:launch_on_startup')){
+                    appLauncher.enable(function(err){
+                        if(err){
+                            console.error(err);
+                            //alert("Error enabling the auto-launch on startup: "+err);
+                        }
+                    });
+                }else{
+
+                    appLauncher.disable(function(err){
+                        if(err){
+                            console.error(err);
+                            //alert("Error disabling the auto-launch on startup: "+err);
+                        }
+                    });
+                }
+
+                $(".settings_save_button").addClass("pure-button-disabled");
+                // Save the configuration object to disk
+                nconf.save(function (err) {
+                    if(err){
+                        alert("Error saving the configuration : "+err);
+                        $(".settings_save_button").addClass("error_button");
+                        $(".settings_save_button").text("Error");
+                    }else{
+                        $(".settings_save_button").addClass("done_button");
+                        $(".settings_save_button").text("Done");
+                    }
+                    console.log("clsing model")
+                    $('.easy-modal').trigger('closeModal');
+                });
+              });
+
+            $(".settings_input").click(function(e){
+                // enable Save button only when an input changed
+                $(".settings_save_button").removeClass("pure-button-disabled error_button done_button");
+                $(".settings_save_button").text("Save");
+              });
+
+              last_tools=[];
+
+            setInterval(function() {
+                DetectToolsOnTheNetworks(
+                    function(err, data) {
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            displayTools(data);
+                        }
+                    });
+            }, 2000);
         });
-      });
-
-    $(".settings_input").click(function(e){
-        // enable Save button only when an input changed
-        $(".settings_save_button").removeClass("pure-button-disabled error_button done_button");
-        $(".settings_save_button").text("Save");
-      });
-
-      last_tools=[];
-
-
-
-    setInterval(function() {
-        DetectToolsOnTheNetworks(
-            function(err, data) {
-                if (err) {
-                    console.error(err);
-                } else {
-                    displayTools(data);
-                }
-            });
-    }, 2000);
-
-});
-
-</script>
+    </script>
 </body>
 </html>
