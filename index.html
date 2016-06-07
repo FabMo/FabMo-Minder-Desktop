@@ -49,7 +49,7 @@
                     <a class="pure-button minimize_button">&and;</a>
                 </div>
             </div>
-          -->
+            -->
 
         </div>
 
@@ -96,19 +96,25 @@
         	nconf = require('nconf');
             parse_args = require('minimist');
             gui = require('nw.gui');
+            process = require('process');
+
         	var AutoLaunch = require('auto-launch');
         	var appLauncher = new AutoLaunch({name: 'FabMo Tool Minder'});
             global.cmd_line_args = {};
+            nconf.use('file', { file: gui.App.dataPath+'/settings.json' });
+
+            var tray;
+            var trayMenu;
 
             gui.App.on('open', function(cmdline) {
               var args = cmdline.split(" ").slice(1);
               if (args[0]==="."){ // avoid bug while running from source.
                 args.shift();
               }
-							if(args[0]===undefined){
-								gui.Window.get().focus();
-								return;
-							}
+    			if(args[0]===undefined){
+    				gui.Window.get().focus();
+    				return;
+    			}
               global.cmd_line_args = parse_args(args);
               window.location.reload();
               window.location = "./launch_file.html";
@@ -124,36 +130,72 @@
 
             }
 
+        function showTray(win) {
+            // Hide window
+            win.hide();
+
+            switch(process.platform) {
+                case 'darwin':
+                    var trayTitle = '';
+                    var trayTooltip = 'FabMo Tool Minder';
+                    var trayIcon = './images/fabmo-icon-18x18-bk.png';
+                    break;
+                default:
+                    var trayTitle = 'FabMo Tool Minder';
+                    var trayTooltip = 'The FabMo Tool Minder service is still running. click to reopen';
+                    var trayIcon = './images/fabmo-icon.png';
+                    break;
+            }
+
+            // Show tray
+            tray = new gui.Tray({
+                title: trayTitle,
+                tooltip: trayTooltip,
+                icon: trayIcon
+            });
+
+            tray.menu = trayMenu;
+            // Show window and remove tray when clicked
+            tray.on('click', function() {
+                win.show();
+                this.remove();
+                tray = null;
+            });
+        }
+
         	$(document).ready(function() {
         		var win = gui.Window.get();
-        		var tray;
-        		var menu = new gui.Menu();
-        		var exit_button = new gui.MenuItem({
+        		trayMenu = new gui.Menu();
+
+                // Show Tool Minder
+                switch(process.platform) {
+                    case 'darwin':
+                        var menuItemShow = new gui.MenuItem({
+                            type: 'normal',
+                            label: 'Show Tool Minder'
+                        });
+                        menuItemShow.on('click', function() {
+                            win.restore();
+                            win.focus();
+                        });
+                        trayMenu.append(menuItemShow);
+                        break;
+                }
+
+                // Exit 
+        		var menuItemExit = new gui.MenuItem({
         			type: 'normal',
-        			label: 'exit'
+        			label: 'Exit'
         		});
-        		menu.append(exit_button);
+                menuItemExit.on('click', function() {
+                    win.close(true);
+                });
+        		trayMenu.append(menuItemExit);
 
     	// Get the minimize event
-
     	win.on('close', function() {
     		if(nconf.get('tray:reduce_on_close')){
-                // Hide window
-                this.hide();
-
-        		// Show tray
-        		tray = new gui.Tray({
-        			title: 'FabMo Tool Minder',
-        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
-        			icon: './images/fabmo.png'
-        		});
-        		tray.menu = menu;
-        		// Show window and remove tray when clicked
-        		tray.on('click', function() {
-        			win.show();
-        			this.remove();
-        			tray = null;
-        		});
+                showTray(this);
         	}else{
         		win.close(true);
         	}
@@ -161,30 +203,12 @@
 
     	win.on('minimize', function() {
     		if(nconf.get('tray:reduce_on_minimize')){
-                // Hide window
-                this.hide();
-
-        		// Show tray
-        		tray = new gui.Tray({
-        			title: 'FabMo Tool Minder',
-        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
-        			icon: './images/fabmo.png'
-        		});
-        		tray.menu = menu;
-        		// Show window and remove tray when clicked
-        		tray.on('click', function() {
-        			win.show();
-        			this.remove();
-        			tray = null;
-        		});
-        	}else{
+                showTray(this);
+        	} else{
                // do noting act like the normal behavior
-             }
-           });
+            }
+        });
 
-    	exit_button.on('click', function() {
-    		win.close(true);
-    	});
 
 
 
@@ -203,7 +227,6 @@
     		$(".settings_save_button").removeClass("error_button done_button").addClass("pure-button-disabled");
     		$(".settings_save_button").text("Save");
             //load settings config
-            nconf.use('file', { file: gui.App.dataPath+'/settings.json' });
 
             $("#min_tray_action").prop("checked",nconf.get('tray:reduce_on_minimize'));
             $("#close_tray_action").prop("checked",nconf.get('tray:reduce_on_close'));
@@ -212,6 +235,10 @@
 
 
     	$(".settings_save_button").click(function(e){
+            if($(this).hasClass('pure-button-disabled')) {
+                return;
+            }
+
     		nconf.set('tray:reduce_on_minimize', $("#min_tray_action").prop("checked"));
     		nconf.set('tray:reduce_on_close', $("#close_tray_action").prop("checked"));
     		nconf.set('startup:launch_on_startup', $("#startup_action").prop("checked"));
@@ -219,14 +246,16 @@
     		if(nconf.get('startup:launch_on_startup')){
     			appLauncher.enable(function(err){
     				if(err){
-    					alert("Error enabling the auto-launch on startup: "+err);
+                        console.error(err);
+    					//alert("Error enabling the auto-launch on startup: "+err);
     				}
     			});
     		}else{
 
     			appLauncher.disable(function(err){
     				if(err){
-    					alert("Error disabling the auto-launch on startup: "+err);
+                        console.error(err);
+    					//alert("Error disabling the auto-launch on startup: "+err);
     				}
     			});
     		}
@@ -243,6 +272,8 @@
             		$(".settings_save_button").addClass("done_button");
             		$(".settings_save_button").text("Done");
             	}
+                console.log("clsing model")
+                $('.easy-modal').trigger('closeModal');
             });
           });
 
@@ -259,7 +290,7 @@
     		if(Object.keys(tools).length<=0) // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
     		{
     			spinner_html='<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>'+
-    			"<div class='apologies'><p>Sorry. Despite my best efforts, I wasn't able to locate any tools...</p><p>I will persist though !</p></div> ";
+    			"<div class='apologies'><p>Searching for tools on the network...</p></div> ";
     			$('.fabmo_devices_list').append(spinner_html);
 
     		}
@@ -325,7 +356,7 @@
     					last_tools[tool.hostname].job=job;
     				}).fail(function() {
     					err = "Link API not responding !";
-    					console.log(err);
+    					console.error(err);
     				});
 
     			});
@@ -338,14 +369,13 @@
     		}
     	}
 
-
     	setInterval(function() {
     		DetectToolsOnTheNetworks(
     			function(err, data) {
     				if (err) {
     					console.error(err);
     				} else {
-    					display_tools(data);
+                        display_tools(data);
     				}
     			});
     	}, 2000);
