@@ -64,8 +64,8 @@
 
         		// Show tray
         		tray = new gui.Tray({
-        			title: 'FabMo Tool Minder',
-        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			title: 'FabMo Minder',
+        			tooltip: 'The FabMo Minder service is still running. click to reopen',
         			icon: './images/fabmo.png'
         		});
         		tray.menu = menu;
@@ -87,8 +87,8 @@
 
         		// Show tray
         		tray = new gui.Tray({
-        			title: 'FabMo Tool Minder',
-        			tooltip: 'The FabMo Tool Minder service is still running. click to reopen',
+        			title: 'FabMo Minder',
+        			tooltip: 'The FabMo Minder service is still running. click to reopen',
         			icon: './images/fabmo.png'
         		});
         		tray.menu = menu;
@@ -114,7 +114,7 @@
                 file: fs.createReadStream(global.cmd_line_args._[0]) || ["G01X1Y1","G01X0Y0","G01X1Y1","G01X0Y0"],
                 name: global.cmd_line_args.name || path.basename(global.cmd_line_args._[0]),
                 filename : global.cmd_line_args.filename || path.basename(global.cmd_line_args._[0]),
-                description : global.cmd_line_args.description || "file posted through the FabMo Tool Minder"
+                description : global.cmd_line_args.description || "file posted through the FabMo Minder"
             });
 
     	}
@@ -329,6 +329,12 @@
     				ChooseBestWayToConnect(tool, function(ip, port) {
     					toolInfo.ip = ip;
     					toolInfo.port = port;
+						var old_state,old_job,old_percentage;
+						if(last_tools && last_tools[tool.hostname]){
+							old_percentage =last_tools[tool.hostname].percentage;
+							old_state =last_tools[tool.hostname].state;
+							old_job =last_tools[tool.hostname].job;
+						}
 
                         /************ IF ONLY ONE TOOL ON THE NETWORK, SEND DIRECTLY TO IT ***********/
     					if(array.length===1 && !file_send){ // a single tool on the network
@@ -344,26 +350,30 @@
     				var ip = toolInfo.ip;
     				var port = toolInfo.port;
 
-    				tool_html =
-                    '<div class="pure-g '+tool.hostname+'">'+
-                        '<div class="pure-u-1-12"></div>'+
-                        '<div class="panel pure-u-5-6">' +
-    				        '<div class="wifi"><img src="images/wifi110.png"></div>' +
-    				        '<h3 class="toolName">' + tool.hostname + '</h3>' +
-                            '<div class="statusColor '+(tool.old_state||'')+'"></div>'+
-                            '<p class="statusTitle">'+(tool.old_state||'')+'</p>' +
-    				        '<div class="job">'+
-                                '<span class="job_label">'+((tool.old_job)?'Job : ':'')+'</span>'+
-                                '<span class="job_title">'+(tool.old_job||'')+'</span>'+
-                            '</div>' +
-    				        '<div class="'+((tool.old_job)?'':'hidden')+' job_progress c100 p'+(tool.old_percentage||0)+' very_small">'+
-                                '<span>'+(tool.old_percentage||0)+' %</span>'+
-                                '<div class="slice"><div class="bar"></div><div class="fill"></div></div>'+
-                            '</div>'+
-    				        '<p class="ipAddress">' + ip + '</p>' +
-    				        '<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
-    				    '</div>'+
-                    '</div>';
+					tool_html =
+						'<div class="pure-g '+tool.hostname+'">'+
+							'<div class="pure-u-1-12"></div>'+
+							'<div class="panel pure-u-5-6">' +
+								'<div class="panelHeader">'+
+									'<div class="wifi"><img src="images/wifi110.png"></div>' +
+									'<div class=" toolName-scroll-box scroll-box"><div class="toolName scroll-text">' + tool.hostname + '</div></div>'+
+									'<div class="statusContainer">'+
+										'<div class="statusColor '+(old_state||'')+'"></div>'+
+										'<p class="statusTitle">'+(old_state||'')+'</p>' +
+									'</div>'+
+								'</div>'+
+								'<p class="ipAddress">' + ip + '</p>' +
+								'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+								'<div class="job">'+
+									'<div class="'+((old_job)?'':'hidden')+' job_progress c100 p'+(old_percentage||0)+' very_small">'+
+										'<span>'+(old_percentage||0)+' %</span>'+
+										'<div class="slice"><div class="bar"></div><div class="fill"></div></div>'+
+									'</div>'+
+									'<span class="job_label">'+((old_job)?'Job : ':'')+'</span>'+
+									'<div class="jobName-scroll-box scroll-box"><div class="scroll-text"><span class="job_title">'+(old_job||'')+'</span></div></div>'+
+								'</div>' +
+							'</div>'+
+						'</div>';
 
     				$('.fabmo_devices_list').append(tool_html);
 
@@ -389,9 +399,10 @@
     						$('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
     						percentage="";
     					}
-    					tool.old_percentage=percentage;
-    					tool.old_state=state;
-    					tool.old_job=job;
+						last_tools[tool.hostname]={};
+    					last_tools[tool.hostname].percentage=percentage;
+    					last_tools[tool.hostname].state=state;
+    					last_tools[tool.hostname].job=job;
     				}).fail(function() {
     					err = "Link API not responding !";
     					console.log(err);
@@ -407,6 +418,30 @@
     				});
 	    			return false;
     			});
+
+				$('.scroll-box').mouseenter(function () {
+					$(this).active =true;
+					$(this).stop();
+					var boxWidth = $(this).width();
+					var textWidth = $('.scroll-text', $(this)).width();
+					if (textWidth > boxWidth) {
+						var animSpeed = textWidth * 5;
+						$(this).animate({
+							scrollLeft: (textWidth - boxWidth)
+						}, animSpeed, function () {
+							$(this).animate({
+								scrollLeft: 0
+							}, animSpeed, function () {
+								$(this).trigger('mouseenter');
+							});
+						});
+					}
+				}).mouseleave(function () {
+					var animSpeed = $(this).scrollLeft() * 5;
+					$(this).stop().animate({
+						scrollLeft: 0
+					}, animSpeed);
+				});
     		}
     	}
 
@@ -423,7 +458,6 @@
     	}, 2000);
 
     });
-
-  </script>
+	</script>
 </body>
 </html>
