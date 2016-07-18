@@ -2,14 +2,14 @@
   "app_name": "FabMo-Tool-Minder-Desktop",
   "window": {
     "title": "FabMo-Tool-Minder-Desktop",
-    "toolbar": false,
+    "toolbar": true,
     "icon": "./images/fabmo.png",
     "min_height": 500,
     "min_width": 450,
     "height": 500,
     "width": 450
   },
-  "version": "1.4.0",
+  "version": "1.4.2",
   "readme": "README.md",
   "license": "MIT",
   "main": "app://tool_minder/index.html",
