@@ -1,5 +1,5 @@
-#define MyAppName "FabMo Tool Minder"
-#define MyAppVersion "1.4.0"
+#define MyAppName "FabMo Minder"
+#define MyAppVersion "1.4.2"
 #define MyAppPublisher "Jimmy Lucidarme"
 #define MyAppURL "http://www.gofabmo.org"
 
@@ -15,7 +15,7 @@ DefaultGroupName={#MyAppName}
 Compression=lzma2
 SolidCompression=yes
 OutputDir=./Win
-OutputBaseFilename=fabmotoolminder-win_x64_x86-setup-v{#MyAppVersion}
+OutputBaseFilename=fabmominder-win_x64_x86-setup-v{#MyAppVersion}
 ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
@@ -23,10 +23,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [CustomMessages]
-english.LaunchProgram=Launch the FabMo Tool Minder
+english.LaunchProgram=Launch the FabMo Minder
 english.DesktopIcon=Desktop Icon
 english.CreateDesktopIcon=Create a desktop icon
-french.LaunchProgram=Lancer le programme FabMo Tool Minder
+french.LaunchProgram=Lancer le programme FabMo Minder
 french.DesktopIcon=Icône du bureau
 french.CreateDesktopIcon=Créer une icône sur le bureau
 
@@ -43,11 +43,11 @@ Source: "../node_modules/*"; Excludes: "nw"; DestDir: "{app}/node_modules"; Flag
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:DesktopIcon}"
 
 [Icons]
-Name: "{group}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
-Name: "{userdesktop}\Fabmo Tool Minder"; Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"; Tasks: desktopicon
+Name: "{group}\Fabmo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
+Name: "{userdesktop}\Fabmo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\FabMo_Tool_Minder.exe"; WorkingDir: "{app}"; Description: {cm:LaunchProgram}; Flags: postinstall shellexec
+Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; Description: {cm:LaunchProgram}; Flags: postinstall shellexec
 
 
 ; add folder to the Path for command line execution
