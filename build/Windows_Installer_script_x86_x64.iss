@@ -43,8 +43,8 @@ Source: "../node_modules/*"; Excludes: "nw"; DestDir: "{app}/node_modules"; Flag
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:DesktopIcon}"
 
 [Icons]
-Name: "{group}\Fabmo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
-Name: "{userdesktop}\Fabmo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"; Tasks: desktopicon
+Name: "{group}\FabMo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"
+Name: "{userdesktop}\FabMo Minder"; Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; IconFilename: "{app}/images/fabmo.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\FabMo_Minder.exe"; WorkingDir: "{app}"; Description: {cm:LaunchProgram}; Flags: postinstall shellexec
