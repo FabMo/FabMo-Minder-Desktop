@@ -9,7 +9,7 @@
     "height": 500,
     "width": 450
   },
-  "version": "1.4.2",
+  "version": "1.4.3",
   "readme": "README.md",
   "license": "MIT",
   "main": "app://tool_minder/index.html",
