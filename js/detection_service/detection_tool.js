@@ -92,7 +92,9 @@ var ERR = "I DNT UNDRSTND !\0";
 // Second message asking for the machine informations.
 var HOSTNAME = "U NAME ?\0";
 
-
+// specific adresses refer to the adresses that are used in AP mode or USB mode.
+// the detection service will try to reach those adresses directly.
+var specific_adresses = ["192.168.10.1","192.168.42.1"]
 
 
 var socket;
@@ -180,7 +182,9 @@ var detection = function(t) {
 			socket.send(new Buffer(REQ), 0, REQ.length, broadcastPort, broadcastAddress, function (err) {
 						if (err) console.log(err);
 					});
-			socket.send(new Buffer(REQ), 0, REQ.length, broadcastPort, "192.168.10.1", function (err) {});
+			for(var i in specific_addresses){
+				socket.send(new Buffer(REQ), 0, REQ.length, broadcastPort, specific_addresses[i], function (err) {});	
+			}
 		}
 
 		//bonjour protocol support
