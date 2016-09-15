@@ -327,11 +327,12 @@
     				var port = toolInfo.port;
 
 
-						var old_state,old_job,old_percentage;
+						var old_state,old_job,old_percentage,isCrashed;
 						if(last_tools && last_tools[tool.hostname]){
 							old_percentage =last_tools[tool.hostname].percentage;
 							old_state =last_tools[tool.hostname].state;
 							old_job =last_tools[tool.hostname].job;
+                            isCrashed = last_tools[tool.hostname].isCrashed;
 						}
 
 
@@ -348,7 +349,7 @@
 										'</div>'+
 									'</div>'+
 									'<p class="ipAddress">' + ip + '</p>' +
-									'<a class="goHere" href="http://' + ip + ':' + port + '"><img src="images/newwindow.png"></a>' +
+									'<a class="goHere '+(isCrashed?"goUpdater":"")+'" href="http://' + ip + ':' + ((old_state==='crashed')?port+1:port) + '"><img src="images/newwindow.png"></a>' +
 			        				'<div class="job">'+
 										'<div class="'+((old_job)?'':'hidden')+' job_progress c100 p'+(old_percentage||0)+' very_small">'+
 											'<span>'+(old_percentage||0)+' %</span>'+
@@ -369,7 +370,7 @@
     					var state = data.data.status.state;
     					var job = (data.data.status.job)?data.data.status.job.name:undefined;
 
-							$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped').addClass(state);
+							$('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
 							$('.'+tool.hostname+' .statusTitle').text(state);
     					if(job){
     						$('.'+tool.hostname+' .job_label').text('Job : ');
@@ -387,9 +388,23 @@
     					last_tools[tool.hostname].percentage=percentage;
     					last_tools[tool.hostname].state=state;
     					last_tools[tool.hostname].job=job;
+                        last_tools[tool.hostname].isCrashed=false;
     				}).fail(function() {
-    					err = "Link API not responding !";
-    					console.log(err);
+    					// Engine is not responding
+                        var state = 'crashed';
+                        $('.'+tool.hostname+' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+                        $('.'+tool.hostname+' .statusTitle').text(state);
+                        $('.'+tool.hostname+' .job_label').text('');
+                        $('.'+tool.hostname+' .job_title').text('');
+                        $('.'+tool.hostname+' .job_progress').removeClass("job_progress").addClass("hidden");
+                        percentage="";
+                        $('.'+tool.hostname+' .goHere').attr('href','http://' + ip + ':' + (port+1));
+
+                        last_tools[tool.hostname]={};
+                        last_tools[tool.hostname].percentage=percentage;
+                        last_tools[tool.hostname].state=state;
+                        last_tools[tool.hostname].job=undefined;
+                        last_tools[tool.hostname].isCrashed = true;
     				});
 
     			});

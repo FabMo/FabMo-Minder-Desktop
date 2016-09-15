@@ -186,6 +186,10 @@ p {
     font-family: Fabfont;
 }
 
+.goHere.goUpdater{
+    background-color: #000000;
+}
+
 .goHere img {
     height: 40px;
 }
@@ -232,6 +236,10 @@ p {
 
 .manual{
     background-color: #2E3865;
+}
+
+.crashed {
+    background-color: #000000;
 }
 
 .job_progress{
