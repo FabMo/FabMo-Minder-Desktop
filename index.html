@@ -199,7 +199,7 @@
             });
             trayMenu.append(menuItemExit);
 
-            // Get the minimize event
+            // Get the close event
             win.on('close', function() {
                 if(nconf.get('tray:reduce_on_close')){
                     win.hide();
@@ -209,10 +209,12 @@
                 }
             });
 
+            // Get the minimize event
             win.on('minimize', function() {
-                // Hide window
-                win.hide();
+
                 if(nconf.get('tray:reduce_on_minimize')){
+                    // Hide window
+                    win.hide();
                     showTray(this);
                 } else{
                    // do noting act like the normal behavior
