@@ -15,7 +15,7 @@ Simply get the latest installer from the [release page](https://github.com/jluci
 
 ## Mac OSX
 
-There is also a package file for MAC on the [release page](https://github.com/jlucidar/FabMo-Tool-Minder-Desktop/releases/latest), but I didn't test it as I'm not a MAC user. I'll apreciate any feedback for it.
+There is also a package file for MAC on the [release page](https://github.com/jlucidar/FabMo-Tool-Minder-Desktop/releases/latest).
 
 ## Linux
 
