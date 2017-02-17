@@ -188,16 +188,16 @@ var detection = function(t) {
 		}
 
 		//bonjour protocol support
-		/*
+		
 		bonjour.find({type:"fabmo"},function(service){
 			var device={};
 			try{
-				device = JSON.parse('{"device" : '+service.txt.fabmo  + ',"active_ip" : "'+ service.rinfo.address+'"}');
-			}catch(ex){console.log("invalid JSON :"+service.txt.fabmo);}
-			devices.push(device);
-			that.emit('new_device',device);
+				device = JSON.parse('{"device" : '+service.txt.fabmo  + ',"active_ip" : "'+ service.referer.address+'"}');
+				devices.push(device);
+				that.emit('new_device',device);
+			}catch(ex){console.log(ex);}
 		});
-		*/
+		
 
 	this.on('newListener', function(listener) {
 	});
