@@ -1,5 +1,5 @@
 #define MyAppName "FabMo Minder"
-#define MyAppVersion "1.4.3"
+#define MyAppVersion "1.5.0"
 #define MyAppPublisher "Jimmy Lucidarme"
 #define MyAppURL "http://www.gofabmo.org"
 
@@ -27,8 +27,8 @@ english.LaunchProgram=Launch the FabMo Minder
 english.DesktopIcon=Desktop Icon
 english.CreateDesktopIcon=Create a desktop icon
 french.LaunchProgram=Lancer le programme FabMo Minder
-french.DesktopIcon=Ic�ne du bureau
-french.CreateDesktopIcon=Cr�er une ic�ne sur le bureau
+french.DesktopIcon=Icone du bureau
+french.CreateDesktopIcon=Creer une icone sur le bureau
 
 [Files]
 ; Place all x64 files here
