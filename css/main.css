@@ -93,7 +93,7 @@ p {
 .panel{
     position: relative;
     background-color: #F6F6F6;
-    margin: .7em;
+    margin-top: .7em;
     border-radius: 5px;
     box-shadow: 1px 1px 5px 0 rgba(188,188,188,1);
     height: 130px;
