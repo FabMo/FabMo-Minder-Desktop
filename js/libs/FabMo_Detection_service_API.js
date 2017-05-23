@@ -99,8 +99,23 @@ function ChooseBestWayToConnect(tool,callback){
 	}
 }
 
+function checkBeacon(callback){
+	if (!callback)
+		throw "this function need a callback to work !";
+	$.ajax({
+		url: 'https://beacon.shopbottools.com/locator/',
+		type: "GET",
+		dataType : 'json'
+	}).done(function(data){
+		callback(undefined,data);
+	}).fail(function(){
+		err="Beacon is not responding";
+		callback(err);
+	});
+}
 
-function DetectToolsOnTheNetworks(callback, linker_port){
+
+function DetectToolsOnTheNetworks(callback, dataFromCloud, linker_port){
 	if (!callback)
 		throw "this function need a callback to work !";
 	var port = linker_port || 8080; //port of the link API
@@ -109,12 +124,36 @@ function DetectToolsOnTheNetworks(callback, linker_port){
 		type: "GET",
 		dataType : 'json'
 	}).done(function(data){
-		callback(undefined,data);
+		if (dataFromCloud === "Beacon is not responding"){
+			for (var i = 0; i<data.length; i++){
+			}
+			callback(undefined, data, undefined);
+		} else {
+			callback(undefined, data, dataFromCloud);
+		}
 	}).fail(function(){
 		err="Link API not responding !";
 		callback(err);
 	});
 }
+
+  function removeDuplicates(originalArray, objKey) {
+        var trimmedArray = [];
+        var values = [];
+        var value;
+
+        for(var i = 0; i < originalArray.length; i++) {
+          value = originalArray[i][objKey];
+
+          if(values.indexOf(value) === -1) {
+            trimmedArray.push(originalArray[i]);
+            values.push(value);
+          }
+        }
+
+        return trimmedArray;
+
+ }
 
 function SelectATool(list_tools,callback){
 	if (!callback)

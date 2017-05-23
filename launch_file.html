@@ -452,9 +452,19 @@
     				if (err) {
     					console.error(err);
     				} else {
-    					display_tools(data);
+    					console.log(data);
     				}
     			});
+
+			checkBeacon(
+				function(err, data){
+					if (err) {
+    					console.error(err);
+    				} else {
+    					display_tools(data);
+    				}
+				}
+			);		
     	}, 2000);
 
     });
