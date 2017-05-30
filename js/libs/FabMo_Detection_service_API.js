@@ -125,15 +125,13 @@ function DetectToolsOnTheNetworks(callback, dataFromCloud, linker_port){
 		dataType : 'json'
 	}).done(function(data){
 		if (dataFromCloud === "Beacon is not responding"){
-			for (var i = 0; i<data.length; i++){
-			}
 			callback(undefined, data, undefined);
 		} else {
 			callback(undefined, data, dataFromCloud);
 		}
 	}).fail(function(){
 		err="Link API not responding !";
-		callback(err);
+		callback(err, undefined, dataFromCloud);
 	});
 }
 
