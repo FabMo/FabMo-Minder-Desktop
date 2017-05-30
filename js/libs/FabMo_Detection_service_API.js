@@ -131,7 +131,7 @@ function DetectToolsOnTheNetworks(callback, dataFromCloud, linker_port){
 		}
 	}).fail(function(){
 		err="Link API not responding !";
-		callback(err, undefined, dataFromCloud);
+		callback(err, {}, dataFromCloud);
 	});
 }
 

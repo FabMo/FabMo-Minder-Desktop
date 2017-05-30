@@ -6,7 +6,7 @@ $(document).ready(function() {
 
   function displayTools(tools) {
     $('.fabmo_devices_list').empty();
-    if (tools == undefined || Object.keys(tools).length <= 0) { // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
+    if (Object.keys(tools).length <= 0) { // tools.length doesn't work as we doesn't decrease the size of the array each time we delete a tool
       spinner_html =
         '<div class="spinner">' +
         '<div class="double-bounce1"></div>' +
