@@ -53,7 +53,7 @@ $(document).ready(function() {
           var state = data.data.status.state;
           var job = (data.data.status.job) ? data.data.status.job.name : undefined;
 
-          $('.' + tool.hostname + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+          $('.' + tool.hostname + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
           $('.' + tool.hostname + ' .statusTitle').text(state);
           if (job) {
             $('.' + tool.hostname + ' .job_label').text('Job : ');
@@ -74,8 +74,8 @@ $(document).ready(function() {
           last_tools[tool.hostname].isCrashed = false;
         }).fail(function() {
           // Engine is not responding
-          var state = 'crashed';
-          $('.' + tool.hostname + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+          var state = 'down';
+          $('.' + tool.hostname + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
           $('.' + tool.hostname + ' .statusTitle').text(state);
           $('.' + tool.hostname + ' .job_label').text('');
           $('.' + tool.hostname + ' .job_title').text('');
@@ -155,8 +155,8 @@ $(document).ready(function() {
           var job = (data.data.status.job) ? data.data.status.job.name : undefined;
           var percentage;
           var isCrashed = false;
-          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
-          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
+          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
           $('#' + tool.machine_id + ' .statusTitle').text(state);
           $('#' + tool.machine_id + ' .goHere').removeClass("goUpdater");
           if (job) {
@@ -174,8 +174,8 @@ $(document).ready(function() {
           
         }).fail(function() {
           console.log("this engine is not responding");
-          // var state = 'crashed';
-          // $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+          // var state = 'down';
+          // $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
           // $('#' + tool.machine_id + ' .statusTitle').text(state);
           // $('#' + tool.machine_id + ' .job_label').text('');
           // $('#' + tool.machine_id + ' .job_title').text('');
@@ -196,8 +196,8 @@ $(document).ready(function() {
           url: 'http://' + ip + ':' + (port + 1) + '/config',
           type: "GET"
         }).done(function(data) {
-          var state = 'crashed';
-          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped crashed').addClass(state);
+          var state = 'down';
+          $('#' + tool.machine_id + ' .statusColor').removeClass('running idle manual paused stopped down').addClass(state);
           $('#' + tool.machine_id + ' .statusTitle').text(state);
           $('#' + tool.machine_id + ' .job_label').text('');
           $('#' + tool.machine_id + ' .job_title').text('');
@@ -235,7 +235,7 @@ function makeHTML (tool, ip, port, old_state, old_job, old_percentage, isCrashed
             '</div>' +
             '</div>' +
             '<p class="ipAddress">' + ip + '</p>' +
-            '<a class="goHere ' + (isCrashed ? "goUpdater" : "") + '" href="http://' + ip + ':' + ((old_state === 'crashed') ? port + 1 : port) + '"><img src="images/newwindow.png"></a>' +
+            '<a class="goHere ' + (isCrashed ? "goUpdater" : "") + '" href="http://' + ip + ':' + ((old_state === 'down') ? port + 1 : port) + '"><img src="images/newwindow.png"></a>' +
             '<div class="job">' +
             '<div class="' + ((old_job) ? '' : 'hidden') + ' job_progress c100 p' + (old_percentage || 0) + ' very_small">' +
             '<span>' + (old_percentage || 0) + ' %</span>' +
@@ -249,6 +249,7 @@ function makeHTML (tool, ip, port, old_state, old_job, old_percentage, isCrashed
 }
 
 function bindEvents(){
+  $('.goHere').off();
   $('.goHere').on("click", function(e) {
     e.preventDefault();
     opener(this.href);
