@@ -109,7 +109,7 @@ function checkBeacon(callback){
 	}).done(function(data){
 		callback(undefined,data);
 	}).fail(function(){
-		err="Beacon is not responding";
+		var err="Beacon is not responding";
 		callback(err);
 	});
 }
@@ -124,14 +124,10 @@ function DetectToolsOnTheNetworks(callback, dataFromCloud, linker_port){
 		type: "GET",
 		dataType : 'json'
 	}).done(function(data){
-		if (dataFromCloud === "Beacon is not responding"){
-			callback(undefined, data, undefined);
-		} else {
-			callback(undefined, data, dataFromCloud);
-		}
+		callback (undefined, data);
 	}).fail(function(){
 		err="Link API not responding !";
-		callback(err, {}, dataFromCloud);
+		callback(err, {});
 	});
 }
 

@@ -2,7 +2,7 @@
   "app_name": "FabMo-Minder-Desktop",
   "window": {
     "title": "FabMo-Minder-Desktop",
-    "toolbar": false,
+    "toolbar": true,
     "icon": "./images/fabmo.png",
     "min_height": 500,
     "min_width": 450,

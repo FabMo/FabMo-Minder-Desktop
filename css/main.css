@@ -4,7 +4,7 @@
 }
 
 body {
-    background-color: #EEEEEE;
+    background-color: #fff;
     color : #444444;
     -webkit-user-select: none;
 
@@ -28,6 +28,9 @@ nav{
     box-shadow: 0 3px 5px 0 rgba(188,188,188,1);
 }
 
+.tool{
+    
+}
 
 .abort_button{
     float: right;
@@ -86,17 +89,39 @@ p {
     font-family: Fabfont;
 }
 
+a:link {
+    text-decoration: none;
+    color: #333;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #333;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #333;
+}
+
+a:active {
+    text-decoration: none;
+    color: #333;
+}
+
 .pure-button {
     display: block;
 }
 
 .panel{
     position: relative;
-    background-color: #F6F6F6;
-    margin-top: .7em;
+    width: 90%;
+    background-color: #F6F6F6; 
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
     border-radius: 5px;
     box-shadow: 1px 1px 5px 0 rgba(188,188,188,1);
-    height: 130px;
 }
 
 .panelHeader{
@@ -121,27 +146,37 @@ p {
 }
 
 .toolName-scroll-box{
-  width: 60%;
-  margin-left: 2em;
+  width: 60vw;
+  margin-left: 1em;
   height: 3em;
 }
 
-.jobName-scroll-box{
-  width: 50%;
-  height: 1.5em;
-}
 
 .ipAddress {
-  margin-left: 2em;
+  margin-left: 1em;
 }
 
 .job {
-  padding-top: .5em;
+  width: 100%;
+  position: relative;
 }
 
 .job_label{
-  margin: .5em
+  display: inline-block;
+  font-size: 1.1em;
+  padding-bottom: 1em;
+  padding-left: 1em;
 }
+
+.jobName-scroll-box{
+    width: 50vw;
+    height: 1.5em;
+    font-size: 1.1em;
+    display: inline-block;
+    padding-bottom: 1em;
+    padding-left: 0.5em;
+  }
+  
 
 .apologies{
     text-align: center;
@@ -149,66 +184,30 @@ p {
 
 .statusContainer{
     display: inline-block;
-    right: 0;
-    float: right;
-    padding-right: 5em;
+    right: 0.5em;
+    bottom: 0.5em;
+    top: 3;
+    position: absolute;
 }
 
 .statusColor{
+    position: relative;
     height: 15px;
     width: 15px;
     border-radius: 50%;
     display: inline-block;
-    margin-left: 1em;
-    margin-top: .7em;
+    top: 2px;
+    margin-left: 0.2em;
 }
 
 .statusTitle{
+    font-size: 1.1em;
     display: inline-block;
-    margin-left: .5em;
-    position:absolute;
-    margin-top: .5em;
-}
-
-.goHere {
-    position: absolute;
-    top: 50;
-    right: 15;
-    float: right;
-    padding-top: 11px;
-    height: 49px;
-    width: 60px;
-    background-color: #5DAA35;
-    border-radius: 50%;
-    text-align: center;
-    color: #ffffff;
-    text-decoration: none;
-    font-family: Fabfont;
-}
-
-.goHere.goUpdater{
-    background-color: #000000;
-}
-
-.goHere img {
-    height: 40px;
+    font-weight: 100;
 }
 
 
-.wifi {
-    position: absolute;
-    background-color: #2E3865;
-    width: 20px;
-    height: 20px;
-    top: 5;
-    left: 5;
-    border-radius: 50%;
-}
 
-.wifi img{
-    padding-left: 2px;
-    padding-top: 2.5px;
-}
 
 .minimize_button{
     position: absolute;
@@ -235,14 +234,15 @@ p {
 }
 
 .manual{
-    background-color: #2E3865;
+    background-color: #8EB8E5;
 }
 
 .down {
     background-color: #000000;
 }
 
-.job_progress{
-    left: 0.1em;
+.job_progress_container{
+    position: absolute;
+    right: 0;
     bottom: 0.35em;
 }
