@@ -1,0 +1,30 @@
+{
+  "app_name": "FabMo-Minder-Desktop",
+  "window": {
+    "title": "FabMo-Minder-Desktop",
+    "toolbar": false,
+    "min_height": 500,
+    "min_width": 450,
+    "height": 500,
+    "width": 450,
+    "icon": "/images/fabmo.png"
+  },
+  "version": "1.7.2",
+  "readme": "README.md",
+  "main": "index.html",
+  "license": "MIT",
+  "description": "",
+  "repository": "https://github.com/Fabmo/FabMo-Tool-Minder-Desktop.git",
+  "detection_service_port": 8080,
+  "dependencies": {
+    "auto-launch": "^1.1.1",
+    "bonjour": "^3.5.0",
+    "form-data": "^0.2.0",
+    "minimist": "^1.2.0",
+    "nconf": ">0.0.0",
+    "opener": "^1.4.1",
+    "restify": "^5.0.0",
+    "uniq": "1.0.1"
+  },
+  "name": "FabMo-Minder-Desktop"
+}

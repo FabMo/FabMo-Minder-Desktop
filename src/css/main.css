@@ -55,7 +55,7 @@ nav{
     background:#EEEEEE;
     padding:40px;
     margin:20px;
-
+    display: none;
 }
 
 .settings_modal_close{
@@ -85,7 +85,7 @@ h3 {
     font-family: Fabfont;
     }
 
-p {
+p, span {
     font-family: Fabfont;
 }
 
@@ -243,6 +243,6 @@ a:active {
 
 .job_progress_container{
     position: absolute;
-    right: 0;
+    right: 0.5em;
     bottom: 0.35em;
 }

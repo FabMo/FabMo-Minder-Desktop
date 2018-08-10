@@ -18,7 +18,6 @@ var routes = require('./js/detection_service/routes')(server);
 
 server.on('error',function (err) {
     if (err.code == 'EADDRINUSE')
-    	console.log('Detection server is already running');
     return;
 });
 

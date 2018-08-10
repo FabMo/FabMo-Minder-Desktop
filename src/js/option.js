@@ -167,7 +167,6 @@ function init_options(){
       if(nconf.get('startup:launch_on_startup')){
           appLauncher.enable(function(err){
               if(err){
-                  console.error(err);
                   //alert("Error enabling the auto-launch on startup: "+err);
               }
           });
@@ -175,7 +174,6 @@ function init_options(){
 
           appLauncher.disable(function(err){
               if(err){
-                  console.error(err);
                   //alert("Error disabling the auto-launch on startup: "+err);
               }
           });
@@ -192,7 +190,6 @@ function init_options(){
               $(".settings_save_button").addClass("done_button");
               $(".settings_save_button").text("Done");
           }
-          console.log("closing modal");
           $('.easy-modal').trigger('closeModal');
       });
     });

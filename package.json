@@ -1,36 +1,13 @@
 {
-  "app_name": "FabMo-Minder-Desktop",
-  "window": {
-    "title": "FabMo-Minder-Desktop",
-    "toolbar": true,
-    "icon": "./images/fabmo.png",
-    "min_height": 500,
-    "min_width": 450,
-    "height": 500,
-    "width": 450
-  },
-  "version": "1.6.0",
-  "readme": "README.md",
-  "license": "MIT",
-  "main": "app://tool_minder/index.html",
-  "description": "",
-  "repository": "https://github.com/jlucidar/FabMo-Tool-Minder-Desktop.git",
-  "detection_service_port": 8080,
-  "dependencies": {
-    "auto-launch": "^1.1.1",
-    "bonjour": "^3.5.0",
-    "form-data": "^0.2.0",
-    "minimist": "^1.2.0",
-    "nconf": ">0.0.0",
-    "node-uuid": ">0.0.0",
+  "name": "FabMo-Minder-Desktop",
+  "version": "1.7.2",
+  "macIcns": "./src/fabmo.icns",
+  "devDependencies": {
     "nw": "^0.12.3",
-    "opener": "^1.4.1",
-    "request": "^2.72.0",
-    "restify": ">0.0.0",
-    "uniq": "1.0.1"
+    "nw-builder": "^3.1.2"
   },
   "scripts": {
-    "start": "nw ."
-  },
-  "name": "FabMo-Minder-Desktop"
+    "dev": "nw src/",
+    "prod": "nwbuild --platforms win32,win64,osx64 --buildDir build/ src/ "
+  }
 }

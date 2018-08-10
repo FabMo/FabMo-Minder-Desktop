@@ -119,7 +119,6 @@ $(document).ready(function() {
   }
 
 function makeHTML (tool, ip, port, old_state, old_job, old_percentage, isCrashed) {
-  console.log(tool);
   return    '<a class="goHere"  href="http://' + ip + ':' + ((old_state == 'down') ? (port + 1) : '') + '">'+
               '<div class="tool" id="' + tool.machine_id + '">' +
                 '<div class=""></div>' +
@@ -189,14 +188,10 @@ function bindEvents(){
     checkBeacon(
       function(err, dataFromCloud) {
         if (err) {
-          console.log('cloud');
-          console.log(err);
           DetectToolsOnTheNetworks(
             function(err, data) {
               if (err) {
-                console.log('local');
-                console.error(err);
-                displayToolsFromCloud(data, null);
+                displayToolsFromCloud(null, null);
               } else  {
                 displayToolsFromCloud(data, null);
               }
@@ -206,10 +201,9 @@ function bindEvents(){
           DetectToolsOnTheNetworks(
             function(err, data) {
               if (err) {
-                console.error(err);
                 displayToolsFromCloud(null, dataFromCloud);
               } else if (dataFromCloud) {
-                displayToolsFromCloud(null, dataFromCloud);
+                displayToolsFromCloud(data, dataFromCloud);
               } 
             }
           )
