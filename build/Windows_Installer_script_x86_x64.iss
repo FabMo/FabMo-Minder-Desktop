@@ -1,5 +1,5 @@
 #define MyAppName "FabMo Minder"
-#define MyAppVersion "1.6.0"
+#define MyAppVersion "1.7.2"
 #define MyAppPublisher "ShopBot Tools, Inc."
 #define MyAppURL "http://www.gofabmo.org/"
 
