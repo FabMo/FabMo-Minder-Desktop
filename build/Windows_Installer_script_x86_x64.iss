@@ -32,9 +32,9 @@ french.CreateDesktopIcon=Creer une icone sur le bureau
 
 [Files]
 ; Place all x64 files here
-Source: "nw_bin/x64/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dcompiler_47.dll,nwjc.exe,pdf.dll" ; DestDir: "{app}"; Check: Is64BitInstallMode; Flags: ignoreversion recursesubdirs
+Source: "FabMo-Minder-Desktop/win64/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dcompiler_47.dll,nwjc.exe,pdf.dll" ; DestDir: "{app}"; Check: Is64BitInstallMode; Flags: ignoreversion recursesubdirs
 ; Place all x86 files here, first one should be marked 'solidbreak'
-Source: "nw_bin/x86/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dcompiler_47.dll,nwjc.exe,pdf.dll" ; DestDir: "{app}"; Check: not Is64BitInstallMode; Flags: solidbreak ignoreversion recursesubdirs
+Source: "FabMo-Minder-Desktop/win32/*"; Excludes: "ffmpegsumo.dll,libEGL.dll,libGLESv2.dll,d3dcompiler_47.dll,nwjc.exe,pdf.dll" ; DestDir: "{app}"; Check: not Is64BitInstallMode; Flags: solidbreak ignoreversion recursesubdirs
 ; Place all common files here, first one should be marked 'solidbreak'
 Source: "../*"; Excludes: "build,.git,.gitattributes,.gitignore,node_modules"; DestDir: "{app}"; Flags: ignoreversion solidbreak recursesubdirs
 Source: "../node_modules/*"; Excludes: "nw"; DestDir: "{app}/node_modules"; Flags: ignoreversion solidbreak recursesubdirs
